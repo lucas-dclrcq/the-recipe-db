@@ -171,6 +171,12 @@ public class RecipeResource { ...
 - Naming: `V{version}__{description}.sql` (e.g., `V1.0.0__the-recipe-db.sql`)
 - Dev mode: `clean-at-start=true` (resets DB on restart)
 
+### Test Data
+
+- Sample/seed data is in `src/main/resources/import.sql`
+- **IMPORTANT**: When modifying entity models (adding/removing columns), update `import.sql` to match the new schema
+- The `import.sql` file contains sample cookbooks, recipes, ingredients, and their relationships for development/testing
+
 ### Tables
 
 | Table                 | Purpose                                   |
@@ -222,8 +228,9 @@ class RecipeResourceTest {
 2. Add Flyway migration in `src/main/resources/db/migration/`
 3. Create DTOs in `src/main/java/org/ldclrcq/dto/`
 4. Create resource in `src/main/java/org/ldclrcq/resource/`
-5. Run `./mvnw quarkus:dev` to apply migration
-6. Regenerate frontend client: `cd src/main/webui && npm run generate-api`
+5. Update `src/main/resources/import.sql` with sample data for the new entity
+6. Run `./mvnw quarkus:dev` to apply migration
+7. Regenerate frontend client: `cd src/main/webui && npm run generate-api`
 
 ### Add a New API Endpoint
 

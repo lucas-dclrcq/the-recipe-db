@@ -29,8 +29,8 @@ INSERT INTO ingredient (id, name, created_at, updated_at) VALUES
 -- =====================
 -- COOKBOOK 1: Italian Classics
 -- =====================
-INSERT INTO cookbook (id, title, author, created_at, updated_at, has_cover) VALUES
-    ('c0000001-0000-0000-0000-000000000001', 'Italian Classics', 'Maria Rossi', NOW(), NOW(), false);
+INSERT INTO cookbook (id, title, author, created_at, updated_at, has_cover, ocr_status) VALUES
+    ('c0000001-0000-0000-0000-000000000001', 'Italian Classics', 'Maria Rossi', NOW(), NOW(), false, 'NONE');
 
 -- Recipes for Italian Classics
 INSERT INTO recipe (id, name, page_number, cookbook_id, created_at, updated_at) VALUES
@@ -87,8 +87,8 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id) VALUES
 -- =====================
 -- COOKBOOK 2: Home Baking Essentials
 -- =====================
-INSERT INTO cookbook (id, title, author, created_at, updated_at, has_cover) VALUES
-    ('c0000002-0000-0000-0000-000000000002', 'Home Baking Essentials', 'Sophie Baker', NOW(), NOW(), false);
+INSERT INTO cookbook (id, title, author, created_at, updated_at, has_cover, ocr_status) VALUES
+    ('c0000002-0000-0000-0000-000000000002', 'Home Baking Essentials', 'Sophie Baker', NOW(), NOW(), false, 'NONE');
 
 -- Recipes for Home Baking Essentials
 INSERT INTO recipe (id, name, page_number, cookbook_id, created_at, updated_at) VALUES
