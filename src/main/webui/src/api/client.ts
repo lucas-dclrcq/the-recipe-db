@@ -4,6 +4,10 @@
  * the-recipe-db API
  * OpenAPI spec version: 1.0-SNAPSHOT
  */
+export interface AddIngredientRequest {
+  ingredientName?: string;
+}
+
 export interface ConfirmImportRequest {
   recipes?: ConfirmedRecipe[];
 }
@@ -950,4 +954,55 @@ export const getApiRecipesId = async (id: Uuid, options?: RequestInit): Promise<
   
   const data: getApiRecipesIdResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getApiRecipesIdResponse
+}
+
+
+
+/**
+ * @summary Add Ingredient
+ */
+export type postApiRecipesIdIngredientsResponse200 = {
+  data: unknown
+  status: 200
+}
+
+export type postApiRecipesIdIngredientsResponse400 = {
+  data: void
+  status: 400
+}
+    
+export type postApiRecipesIdIngredientsResponseSuccess = (postApiRecipesIdIngredientsResponse200) & {
+  headers: Headers;
+};
+export type postApiRecipesIdIngredientsResponseError = (postApiRecipesIdIngredientsResponse400) & {
+  headers: Headers;
+};
+
+export type postApiRecipesIdIngredientsResponse = (postApiRecipesIdIngredientsResponseSuccess | postApiRecipesIdIngredientsResponseError)
+
+export const getPostApiRecipesIdIngredientsUrl = (id: Uuid,) => {
+
+
+  
+
+  return `/api/recipes/${id}/ingredients`
+}
+
+export const postApiRecipesIdIngredients = async (id: Uuid,
+    addIngredientRequest: AddIngredientRequest, options?: RequestInit): Promise<postApiRecipesIdIngredientsResponse> => {
+  
+  const res = await fetch(getPostApiRecipesIdIngredientsUrl(id),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      addIngredientRequest,)
+  }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  
+  const data: postApiRecipesIdIngredientsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as postApiRecipesIdIngredientsResponse
 }

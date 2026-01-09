@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
-import { ArrowLeftIcon, BookOpenIcon } from '@heroicons/vue/24/outline'
-import { getApiRecipesId } from '../api/client'
-import type { Recipe } from '../types/recipe'
+import { ArrowLeftIcon, BookOpenIcon, PlusIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { getApiRecipesId, postApiRecipesIdIngredients } from '../api/client'
+import type { Recipe, Ingredient } from '../types/recipe'
+import IngredientAutocomplete from '../components/IngredientAutocomplete.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -11,6 +12,11 @@ const router = useRouter()
 const recipe = ref<Recipe | null>(null)
 const isLoading = ref(true)
 const error = ref<string | null>(null)
+
+const showAddIngredient = ref(false)
+const newIngredientName = ref('')
+const isAddingIngredient = ref(false)
+const addIngredientError = ref<string | null>(null)
 
 async function fetchRecipe() {
   const id = route.params.id as string
@@ -43,6 +49,46 @@ function goBack() {
     router.back()
   } else {
     router.push('/')
+  }
+}
+
+function openAddIngredient() {
+  showAddIngredient.value = true
+  newIngredientName.value = ''
+  addIngredientError.value = null
+}
+
+function closeAddIngredient() {
+  showAddIngredient.value = false
+  newIngredientName.value = ''
+  addIngredientError.value = null
+}
+
+function handleIngredientSelect(ingredient: Ingredient) {
+  newIngredientName.value = ingredient.name
+}
+
+async function addIngredient() {
+  if (!recipe.value || !newIngredientName.value.trim()) return
+
+  isAddingIngredient.value = true
+  addIngredientError.value = null
+
+  try {
+    const response = await postApiRecipesIdIngredients(recipe.value.id, {
+      ingredientName: newIngredientName.value.trim(),
+    })
+
+    if (response.status === 200) {
+      recipe.value = response.data as Recipe
+      closeAddIngredient()
+    } else {
+      addIngredientError.value = 'Failed to add ingredient'
+    }
+  } catch (e) {
+    addIngredientError.value = e instanceof Error ? e.message : 'Failed to add ingredient'
+  } finally {
+    isAddingIngredient.value = false
   }
 }
 
@@ -120,9 +166,9 @@ onMounted(() => {
           </div>
         </div>
 
-        <div v-if="recipe.ingredients.length > 0" class="border-t border-gray-200 px-6 py-6">
+        <div class="border-t border-gray-200 px-6 py-6">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">Ingredients</h2>
-          <div class="flex flex-wrap gap-2">
+          <div v-if="recipe.ingredients.length > 0" class="flex flex-wrap gap-2 mb-4">
             <RouterLink
               v-for="ingredient in recipe.ingredients"
               :key="ingredient"
@@ -131,6 +177,54 @@ onMounted(() => {
             >
               {{ ingredient }}
             </RouterLink>
+          </div>
+          <p v-else class="text-gray-500 text-sm mb-4">No ingredients yet.</p>
+
+          <div v-if="!showAddIngredient">
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-md transition-colors"
+              @click="openAddIngredient"
+            >
+              <PlusIcon class="h-4 w-4" />
+              Add ingredient
+            </button>
+          </div>
+
+          <div v-else class="mt-2 p-4 bg-gray-50 rounded-lg">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-medium text-gray-700">Add new ingredient</span>
+              <button
+                type="button"
+                class="text-gray-400 hover:text-gray-600"
+                @click="closeAddIngredient"
+              >
+                <XMarkIcon class="h-5 w-5" />
+              </button>
+            </div>
+            <div class="flex gap-2">
+              <div class="flex-1">
+                <IngredientAutocomplete
+                  v-model="newIngredientName"
+                  @select="handleIngredientSelect"
+                />
+              </div>
+              <button
+                type="button"
+                :disabled="!newIngredientName.trim() || isAddingIngredient"
+                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                @click="addIngredient"
+              >
+                <span v-if="isAddingIngredient">Adding...</span>
+                <span v-else>Add</span>
+              </button>
+            </div>
+            <p class="mt-2 text-xs text-gray-500">
+              Type to search existing ingredients or enter a new one.
+            </p>
+            <p v-if="addIngredientError" class="mt-2 text-sm text-red-600">
+              {{ addIngredientError }}
+            </p>
           </div>
         </div>
 

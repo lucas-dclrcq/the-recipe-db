@@ -1,8 +1,10 @@
 package org.ldclrcq.resource;
 
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.ldclrcq.dto.AddIngredientRequest;
 import org.ldclrcq.dto.RecipeListResponse;
 import org.ldclrcq.dto.RecipeResponse;
 import org.ldclrcq.entity.Cookbook;
@@ -66,6 +68,40 @@ public class RecipeResource {
         }
 
         return Response.ok(toRecipeResponse(recipe.get())).build();
+    }
+
+    @POST
+    @Path("/{id}/ingredients")
+    @Transactional
+    public Response addIngredient(@PathParam("id") UUID id, AddIngredientRequest request) {
+        if (request == null || request.ingredientName() == null || request.ingredientName().isBlank()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Ingredient name is required")
+                    .build();
+        }
+
+        Optional<Recipe> recipeOpt = Recipe.findByIdOptional(id);
+        if (recipeOpt.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Recipe not found")
+                    .build();
+        }
+
+        Recipe recipe = recipeOpt.get();
+        String normalizedName = Ingredient.normalize(request.ingredientName());
+
+        // Find existing ingredient or create a new one
+        Ingredient ingredient = Ingredient.findByName(normalizedName)
+                .orElseGet(() -> {
+                    Ingredient newIngredient = Ingredient.create(normalizedName);
+                    newIngredient.persist();
+                    return newIngredient;
+                });
+
+        recipe.addIngredient(ingredient);
+        recipe.persist();
+
+        return Response.ok(toRecipeResponse(recipe)).build();
     }
 
     private RecipeResponse toRecipeResponse(Recipe recipe) {

@@ -2,6 +2,14 @@
   "openapi" : "3.1.0",
   "components" : {
     "schemas" : {
+      "AddIngredientRequest" : {
+        "type" : "object",
+        "properties" : {
+          "ingredientName" : {
+            "type" : "string"
+          }
+        }
+      },
       "ConfirmImportRequest" : {
         "type" : "object",
         "properties" : {
@@ -688,6 +696,43 @@
           }
         },
         "summary" : "Get Recipe",
+        "tags" : [ "Recipe Resource" ]
+      }
+    },
+    "/api/recipes/{id}/ingredients" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AddIngredientRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Add Ingredient",
         "tags" : [ "Recipe Resource" ]
       }
     }

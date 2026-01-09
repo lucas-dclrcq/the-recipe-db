@@ -251,5 +251,154 @@ class RecipeResourceTest {
                 // Should only return up to MAX_LIMIT recipes
                 .body("recipes.size()", lessThanOrEqualTo(100));
     }
+
+    @Test
+    void addIngredient_shouldAddExistingIngredient() {
+        // Get a recipe ID
+        String recipeId = given()
+                .queryParam("q", "Spaghetti")
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("recipes[0].id");
+
+        // Add an existing ingredient (parmesan exists from Caesar Salad)
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "ingredientName": "parmesan"
+                        }
+                        """)
+                .when()
+                .post("/api/recipes/{id}/ingredients", recipeId)
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(recipeId))
+                .body("ingredients", hasItem("parmesan"));
+    }
+
+    @Test
+    void addIngredient_shouldCreateAndAddNewIngredient() {
+        // Get a recipe ID
+        String recipeId = given()
+                .queryParam("q", "Spaghetti")
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("recipes[0].id");
+
+        // Add a new ingredient that doesn't exist yet
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "ingredientName": "Fresh Basil"
+                        }
+                        """)
+                .when()
+                .post("/api/recipes/{id}/ingredients", recipeId)
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(recipeId))
+                .body("ingredients", hasItem("fresh basil")); // normalized to lowercase
+    }
+
+    @Test
+    void addIngredient_shouldReturn404ForUnknownRecipe() {
+        UUID randomId = UUID.randomUUID();
+
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "ingredientName": "garlic"
+                        }
+                        """)
+                .when()
+                .post("/api/recipes/{id}/ingredients", randomId)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void addIngredient_shouldNotDuplicateExistingAssociation() {
+        // Get a recipe ID
+        String recipeId = given()
+                .queryParam("q", "Spaghetti")
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("recipes[0].id");
+
+        // Add ground beef again (already associated with Spaghetti Bolognese)
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "ingredientName": "ground beef"
+                        }
+                        """)
+                .when()
+                .post("/api/recipes/{id}/ingredients", recipeId)
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(recipeId))
+                .body("ingredients", hasItem("ground beef"))
+                // Count of ground beef should still be 1 (no duplicate)
+                .body("ingredients.findAll { it == 'ground beef' }.size()", equalTo(1));
+    }
+
+    @Test
+    void addIngredient_shouldReturn400ForEmptyIngredientName() {
+        // Get a recipe ID
+        String recipeId = given()
+                .queryParam("q", "Spaghetti")
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("recipes[0].id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "ingredientName": ""
+                        }
+                        """)
+                .when()
+                .post("/api/recipes/{id}/ingredients", recipeId)
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    void addIngredient_shouldReturn400ForMissingIngredientName() {
+        // Get a recipe ID
+        String recipeId = given()
+                .queryParam("q", "Spaghetti")
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("recipes[0].id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .body("{}")
+                .when()
+                .post("/api/recipes/{id}/ingredients", recipeId)
+                .then()
+                .statusCode(400);
+    }
 }
 
