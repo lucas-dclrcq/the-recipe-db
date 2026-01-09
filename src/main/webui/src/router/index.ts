@@ -48,6 +48,11 @@ const router = createRouter({
             name: 'import-success',
             component: () => import('../views/ImportSuccessPage.vue'),
         },
+        {
+            path: '/cookbooks/:id/review',
+            name: 'cookbook-review',
+            component: () => import('../views/CookbookReviewPage.vue'),
+        },
     ],
 })
 

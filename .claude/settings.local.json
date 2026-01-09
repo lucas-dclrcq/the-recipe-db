@@ -8,7 +8,9 @@
       "Bash(./mvnw compile:*)",
       "Bash(npm run generate-api:*)",
       "Bash(tree:*)",
-      "Bash(./mvnw test:*)"
+      "Bash(./mvnw test:*)",
+      "Bash(sh ./mvnw test:*)",
+      "Bash(sh:*)"
     ],
     "deny": [],
     "ask": []

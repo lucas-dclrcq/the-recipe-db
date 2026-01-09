@@ -453,6 +453,48 @@ if(postApiCookbooksIdIndexPagesBody.files !== undefined) {
 
 
 /**
+ * @summary Get Ocr Results
+ */
+export type getApiCookbooksIdOcrResultsResponse200 = {
+  data: unknown
+  status: 200
+}
+    
+export type getApiCookbooksIdOcrResultsResponseSuccess = (getApiCookbooksIdOcrResultsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type getApiCookbooksIdOcrResultsResponse = (getApiCookbooksIdOcrResultsResponseSuccess)
+
+export const getGetApiCookbooksIdOcrResultsUrl = (id: Uuid,) => {
+
+
+  
+
+  return `/api/cookbooks/${id}/ocr/results`
+}
+
+export const getApiCookbooksIdOcrResults = async (id: Uuid, options?: RequestInit): Promise<getApiCookbooksIdOcrResultsResponse> => {
+  
+  const res = await fetch(getGetApiCookbooksIdOcrResultsUrl(id),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  
+  const data: getApiCookbooksIdOcrResultsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getApiCookbooksIdOcrResultsResponse
+}
+
+
+
+/**
  * @summary Start Ocr Processing
  */
 export type postApiCookbooksIdOcrStartResponse200 = {

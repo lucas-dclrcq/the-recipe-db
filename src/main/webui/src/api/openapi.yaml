@@ -224,6 +224,23 @@ paths:
       summary: Upload Index Pages
       tags:
       - Cookbook Resource
+  /api/cookbooks/{id}/ocr/results:
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Get Ocr Results
+      tags:
+      - Cookbook Resource
   /api/cookbooks/{id}/ocr/start:
     post:
       parameters:

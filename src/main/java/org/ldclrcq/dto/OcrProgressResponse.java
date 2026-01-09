@@ -8,6 +8,7 @@ public class OcrProgressResponse {
         PENDING,
         IN_PROGRESS,
         COMPLETED,
+        COMPLETED_WITH_ERRORS,
         FAILED
     }
 
@@ -16,16 +17,22 @@ public class OcrProgressResponse {
     private int totalPages;
     private List<OcrResultDto> results;
     private String errorMessage;
+    private List<PageError> failedPages;
 
     public OcrProgressResponse() {
     }
 
     public OcrProgressResponse(Status status, int currentPage, int totalPages, List<OcrResultDto> results, String errorMessage) {
+        this(status, currentPage, totalPages, results, errorMessage, List.of());
+    }
+
+    public OcrProgressResponse(Status status, int currentPage, int totalPages, List<OcrResultDto> results, String errorMessage, List<PageError> failedPages) {
         this.status = status;
         this.currentPage = currentPage;
         this.totalPages = totalPages;
         this.results = results;
         this.errorMessage = errorMessage;
+        this.failedPages = failedPages;
     }
 
     public Status getStatus() {
@@ -66,5 +73,13 @@ public class OcrProgressResponse {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public List<PageError> getFailedPages() {
+        return failedPages;
+    }
+
+    public void setFailedPages(List<PageError> failedPages) {
+        this.failedPages = failedPages;
     }
 }

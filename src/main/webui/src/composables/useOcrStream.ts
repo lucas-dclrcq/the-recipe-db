@@ -1,6 +1,6 @@
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import type { OcrProgressEvent, OcrResultDto, Status } from '../types/ocr'
-import { getPostApiCookbooksIdOcrStartUrl } from '../api/client'
+import { getPostApiCookbooksIdOcrStartUrl, getGetApiCookbooksIdOcrResultsUrl } from '../api/client'
 
 export function useOcrStream() {
   const status = ref<Status | null>(null)
@@ -9,6 +9,51 @@ export function useOcrStream() {
   const results = ref<OcrResultDto[]>([])
   const errorMessage = ref<string | null>(null)
   const isProcessing = ref(false)
+
+  let pollInterval: ReturnType<typeof setInterval> | null = null
+
+  function stopPolling() {
+    if (pollInterval) {
+      clearInterval(pollInterval)
+      pollInterval = null
+    }
+  }
+
+  async function checkStatus(
+    cookbookId: string,
+    onComplete?: (results: OcrResultDto[]) => void,
+    onError?: (error: string) => void
+  ) {
+    try {
+      const url = getGetApiCookbooksIdOcrResultsUrl(cookbookId)
+      const response = await fetch(url)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`)
+      }
+
+      const data: OcrProgressEvent = await response.json()
+
+      status.value = data.status ?? null
+      currentPage.value = data.currentPage ?? 0
+      totalPages.value = data.totalPages ?? 0
+      results.value = data.results ?? []
+      errorMessage.value = data.errorMessage ?? null
+
+      if (data.status === 'COMPLETED' || data.status === 'COMPLETED_WITH_ERRORS') {
+        stopPolling()
+        isProcessing.value = false
+        onComplete?.(results.value)
+      } else if (data.status === 'FAILED') {
+        stopPolling()
+        isProcessing.value = false
+        onError?.(data.errorMessage || 'OCR processing failed')
+      }
+    } catch (e) {
+      // Don't stop polling on transient errors
+      console.error('Error checking OCR status:', e)
+    }
+  }
 
   async function startOcrProcessing(
     cookbookId: string,
@@ -28,35 +73,34 @@ export function useOcrStream() {
     try {
       const response = await fetch(url, { method: 'POST' })
 
-      if (!response.ok) {
+      if (response.status === 409) {
+        // Already processing - start polling to check status
+        status.value = 'IN_PROGRESS'
+      } else if (!response.ok) {
         const errorText = await response.text()
         throw new Error(errorText || `HTTP error: ${response.status}`)
+      } else {
+        status.value = 'IN_PROGRESS'
       }
 
-      const data: OcrProgressEvent = await response.json()
+      // Start polling for results
+      pollInterval = setInterval(() => {
+        checkStatus(cookbookId, onComplete, onError)
+      }, 3000)
 
-      status.value = data.status ?? null
-      currentPage.value = data.currentPage ?? 0
-      totalPages.value = data.totalPages ?? 0
-      results.value = data.results ?? []
-      errorMessage.value = data.errorMessage ?? null
-
-      if (data.status === 'COMPLETED') {
-        onComplete?.(results.value)
-      } else if (data.status === 'FAILED') {
-        onError?.(data.errorMessage || 'OCR processing failed')
-      }
+      // Also check immediately
+      await checkStatus(cookbookId, onComplete, onError)
     } catch (e) {
       status.value = 'FAILED'
       const message = e instanceof Error ? e.message : 'Failed to start OCR processing'
       errorMessage.value = message
-      onError?.(message)
-    } finally {
       isProcessing.value = false
+      onError?.(message)
     }
   }
 
   function reset() {
+    stopPolling()
     status.value = null
     currentPage.value = 0
     totalPages.value = 0
@@ -64,6 +108,10 @@ export function useOcrStream() {
     errorMessage.value = null
     isProcessing.value = false
   }
+
+  onUnmounted(() => {
+    stopPolling()
+  })
 
   return {
     status,

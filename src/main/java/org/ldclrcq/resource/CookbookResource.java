@@ -8,16 +8,12 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.ldclrcq.dto.*;
-import org.ldclrcq.entity.Cookbook;
-import org.ldclrcq.entity.CookbookIndexPage;
-import org.ldclrcq.entity.Ingredient;
-import org.ldclrcq.entity.Recipe;
+import org.ldclrcq.entity.*;
 import org.ldclrcq.service.OcrService;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Path("/api/cookbooks")
 @Produces(MediaType.APPLICATION_JSON)
@@ -103,17 +99,84 @@ public class CookbookResource {
     @Path("/{id}/ocr/start")
     @Transactional
     public Response startOcrProcessing(@PathParam("id") UUID cookbookId) {
-        Optional<Cookbook> cookbook = Cookbook.findByIdOptional(cookbookId);
-        if (cookbook.isEmpty()) {
+        Optional<Cookbook> cookbookOpt = Cookbook.findByIdOptional(cookbookId);
+        if (cookbookOpt.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("Cookbook not found: " + cookbookId)
                     .build();
         }
 
-        List<CookbookIndexPage> pages = CookbookIndexPage.findByCookbookIdOrdered(cookbookId);
-        OcrProgressResponse response = ocrService.processPages(cookbookId, pages);
+        Cookbook cookbook = cookbookOpt.get();
 
-        return Response.ok(response).build();
+        // Check if already processing
+        if (cookbook.ocrStatus == Cookbook.OcrStatus.PROCESSING) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("OCR processing is already in progress for this cookbook")
+                    .build();
+        }
+
+        // Check if there are index pages
+        List<CookbookIndexPage> pages = CookbookIndexPage.findByCookbookIdOrdered(cookbookId);
+        if (pages.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("No index pages found for cookbook")
+                    .build();
+        }
+
+        // Set status to PROCESSING
+        cookbook.ocrStatus = Cookbook.OcrStatus.PROCESSING;
+        cookbook.ocrErrorMessage = null;
+
+        // Start async processing (will run after transaction commits)
+        ocrService.startAsyncProcessing(cookbookId);
+
+        return Response.accepted(Map.of(
+                "message", "OCR processing started",
+                "cookbookId", cookbookId,
+                "status", "PROCESSING"
+        )).build();
+    }
+
+    @GET
+    @Path("/{id}/ocr/results")
+    public Response getOcrResults(@PathParam("id") UUID cookbookId) {
+        Optional<Cookbook> cookbookOpt = Cookbook.findByIdOptional(cookbookId);
+        if (cookbookOpt.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Cookbook not found: " + cookbookId)
+                    .build();
+        }
+
+        Cookbook cookbook = cookbookOpt.get();
+        List<OcrResultEntity> results = OcrResultEntity.findByCookbookId(cookbookId);
+
+        List<OcrResultDto> resultDtos = results.stream()
+                .map(r -> new OcrResultDto(
+                        r.ingredient,
+                        r.recipeName,
+                        r.pageNumber,
+                        r.confidence,
+                        r.needsReview
+                ))
+                .toList();
+
+        return Response.ok(new OcrProgressResponse(
+                mapOcrStatus(cookbook.ocrStatus),
+                0,
+                0,
+                resultDtos,
+                cookbook.ocrErrorMessage
+        )).build();
+    }
+
+    private OcrProgressResponse.Status mapOcrStatus(Cookbook.OcrStatus status) {
+        return switch (status) {
+            case NONE -> OcrProgressResponse.Status.PENDING;
+            case PROCESSING -> OcrProgressResponse.Status.IN_PROGRESS;
+            case COMPLETED -> OcrProgressResponse.Status.COMPLETED;
+            case COMPLETED_WITH_ERRORS -> OcrProgressResponse.Status.COMPLETED_WITH_ERRORS;
+            case FAILED -> OcrProgressResponse.Status.FAILED;
+        };
     }
 
     @POST
@@ -170,6 +233,12 @@ public class CookbookResource {
             recipe.persist();
         }
 
+        // Clear OCR results and reset status after successful import
+        OcrResultEntity.deleteByCookbookId(cookbookId);
+        Cookbook c = cookbook.get();
+        c.ocrStatus = Cookbook.OcrStatus.NONE;
+        c.ocrErrorMessage = null;
+
         return Response.ok(new ConfirmImportResponse(recipesByKey.size())).build();
     }
 
@@ -191,7 +260,9 @@ public class CookbookResource {
                         c.author,
                         c.createdAt,
                         c.countRecipes(),
-                        c.hasCover
+                        c.hasCover,
+                        c.ocrStatus.name(),
+                        c.ocrErrorMessage
                 ))
                 .toList();
 
@@ -216,7 +287,9 @@ public class CookbookResource {
                 c.author,
                 c.createdAt,
                 c.countRecipes(),
-                c.hasCover
+                c.hasCover,
+                c.ocrStatus.name(),
+                c.ocrErrorMessage
         );
 
         return Response.ok(response).build();

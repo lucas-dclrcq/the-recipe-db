@@ -9,5 +9,7 @@ public record CookbookDetailResponse(
         String author,
         Instant createdAt,
         long recipeCount,
-        boolean hasCover
+        boolean hasCover,
+        String ocrStatus,
+        String ocrErrorMessage
 ) {}

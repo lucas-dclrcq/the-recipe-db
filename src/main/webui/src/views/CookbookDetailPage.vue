@@ -35,6 +35,36 @@ const previewUrl = computed(() => {
   return URL.createObjectURL(selectedFile.value)
 })
 
+const ocrStatusClass = computed(() => {
+  switch (cookbook.value?.ocrStatus) {
+    case 'PROCESSING':
+      return 'bg-blue-50 text-blue-800'
+    case 'COMPLETED':
+      return 'bg-green-50 text-green-800'
+    case 'COMPLETED_WITH_ERRORS':
+      return 'bg-yellow-50 text-yellow-800'
+    case 'FAILED':
+      return 'bg-red-50 text-red-800'
+    default:
+      return 'bg-gray-50 text-gray-800'
+  }
+})
+
+const ocrStatusText = computed(() => {
+  switch (cookbook.value?.ocrStatus) {
+    case 'PROCESSING':
+      return 'OCR processing in progress...'
+    case 'COMPLETED':
+      return 'OCR results ready for review'
+    case 'COMPLETED_WITH_ERRORS':
+      return 'OCR completed with some errors'
+    case 'FAILED':
+      return 'OCR processing failed'
+    default:
+      return ''
+  }
+})
+
 function onFileChange(e: Event) {
   const t = e.target as HTMLInputElement
   const file = t.files && t.files.length > 0 ? t.files[0] : null
@@ -229,6 +259,45 @@ onMounted(() => {
                 >
                   Search within this cookbook
                 </RouterLink>
+              </div>
+
+              <!-- OCR Status Section -->
+              <div v-if="cookbook.ocrStatus !== 'NONE'" class="mt-6 p-4 rounded-lg" :class="ocrStatusClass">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <svg v-if="cookbook.ocrStatus === 'PROCESSING'" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <svg v-else-if="cookbook.ocrStatus === 'COMPLETED'" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <svg v-else-if="cookbook.ocrStatus === 'FAILED'" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <svg v-else class="h-5 w-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                      <p class="font-medium">{{ ocrStatusText }}</p>
+                      <p v-if="cookbook.ocrErrorMessage" class="text-sm opacity-75">{{ cookbook.ocrErrorMessage }}</p>
+                    </div>
+                  </div>
+                  <RouterLink
+                    v-if="cookbook.ocrStatus === 'COMPLETED' || cookbook.ocrStatus === 'COMPLETED_WITH_ERRORS'"
+                    :to="`/cookbooks/${cookbook.id}/review`"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    Review Results
+                  </RouterLink>
+                  <RouterLink
+                    v-else-if="cookbook.ocrStatus === 'PROCESSING'"
+                    :to="`/cookbooks/${cookbook.id}/review`"
+                    class="text-sm text-indigo-600 hover:text-indigo-800"
+                  >
+                    View progress
+                  </RouterLink>
+                </div>
               </div>
 
               <div class="mt-6">

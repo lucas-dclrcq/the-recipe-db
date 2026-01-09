@@ -12,8 +12,10 @@ import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static io.restassured.RestAssured.given;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
@@ -28,7 +30,7 @@ class OcrProcessingTest {
     }
 
     @Test
-    void startOcrProcessing_shouldReturnFailedWhenNoIndexPages() {
+    void startOcrProcessing_shouldReturnBadRequestWhenNoIndexPages() {
         // Create a cookbook without uploading any index pages
         String cookbookId = given()
                 .contentType(ContentType.JSON)
@@ -51,9 +53,8 @@ class OcrProcessingTest {
                 .when()
                 .post("/api/cookbooks/{id}/ocr/start", cookbookId)
                 .then()
-                .statusCode(200)
-                .body("status", equalTo("FAILED"))
-                .body("errorMessage", equalTo("No index pages found for cookbook"));
+                .statusCode(400)
+                .body(containsString("No index pages found"));
     }
 
     @Test
@@ -93,20 +94,28 @@ class OcrProcessingTest {
                 .statusCode(200)
                 .body("pageCount", equalTo(1));
 
-        // Start OCR processing
+        // Start OCR processing - returns 202 Accepted
         given()
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/api/cookbooks/{id}/ocr/start", cookbookId)
                 .then()
-                .statusCode(200)
-                .body("status", equalTo("COMPLETED"))
-                .body("totalPages", equalTo(1))
-                .body("results.size()", equalTo(3))
-                .body("results.find { it.recipeName == 'Chocolate Cake' && it.ingredient == 'chocolate' }", notNullValue())
-                .body("results.find { it.recipeName == 'Chocolate Cake' && it.ingredient == 'flour' }", notNullValue())
-                .body("results.find { it.recipeName == 'Vanilla Ice Cream' && it.ingredient == 'vanilla' }", notNullValue())
-                .body("errorMessage", nullValue());
+                .statusCode(202)
+                .body("status", equalTo("PROCESSING"));
+
+        // Wait for processing to complete and verify results
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
+            given()
+                    .when()
+                    .get("/api/cookbooks/{id}/ocr/results", cookbookId)
+                    .then()
+                    .statusCode(200)
+                    .body("status", equalTo("COMPLETED"))
+                    .body("results.size()", equalTo(3))
+                    .body("results.find { it.recipeName == 'Chocolate Cake' && it.ingredient == 'chocolate' }", notNullValue())
+                    .body("results.find { it.recipeName == 'Chocolate Cake' && it.ingredient == 'flour' }", notNullValue())
+                    .body("results.find { it.recipeName == 'Vanilla Ice Cream' && it.ingredient == 'vanilla' }", notNullValue());
+        });
     }
 
     @Test
@@ -157,12 +166,20 @@ class OcrProcessingTest {
                 .when()
                 .post("/api/cookbooks/{id}/ocr/start", cookbookId)
                 .then()
-                .statusCode(200)
-                .body("status", equalTo("COMPLETED"))
-                .body("totalPages", equalTo(2))
-                .body("results.size()", equalTo(2))
-                .body("results.find { it.recipeName == 'Apple Pie' }", notNullValue())
-                .body("results.find { it.recipeName == 'Banana Bread' }", notNullValue());
+                .statusCode(202);
+
+        // Wait for processing to complete
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
+            given()
+                    .when()
+                    .get("/api/cookbooks/{id}/ocr/results", cookbookId)
+                    .then()
+                    .statusCode(200)
+                    .body("status", equalTo("COMPLETED"))
+                    .body("results.size()", equalTo(2))
+                    .body("results.find { it.recipeName == 'Apple Pie' }", notNullValue())
+                    .body("results.find { it.recipeName == 'Banana Bread' }", notNullValue());
+        });
     }
 
     @Test
@@ -199,16 +216,25 @@ class OcrProcessingTest {
                 .then()
                 .statusCode(200);
 
-        // Start OCR processing - should mark low confidence items for review
+        // Start OCR processing
         given()
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/api/cookbooks/{id}/ocr/start", cookbookId)
                 .then()
-                .statusCode(200)
-                .body("status", equalTo("COMPLETED"))
-                .body("results[0].confidence", equalTo(0.50f))
-                .body("results[0].needsReview", equalTo(true));
+                .statusCode(202);
+
+        // Wait for processing and verify low confidence items for review
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
+            given()
+                    .when()
+                    .get("/api/cookbooks/{id}/ocr/results", cookbookId)
+                    .then()
+                    .statusCode(200)
+                    .body("status", equalTo("COMPLETED"))
+                    .body("results[0].confidence", equalTo(0.50f))
+                    .body("results[0].needsReview", equalTo(true));
+        });
     }
 
     @Test
@@ -243,15 +269,83 @@ class OcrProcessingTest {
                 .then()
                 .statusCode(200);
 
-        // Start OCR processing - should return FAILED status
+        // Start OCR processing
         given()
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/api/cookbooks/{id}/ocr/start", cookbookId)
                 .then()
+                .statusCode(202);
+
+        // Wait for processing to fail
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
+            given()
+                    .when()
+                    .get("/api/cookbooks/{id}/ocr/results", cookbookId)
+                    .then()
+                    .statusCode(200)
+                    .body("status", equalTo("FAILED"));
+        });
+    }
+
+    @Test
+    void startOcrProcessing_shouldContinueProcessingWhenOnePageFails() {
+        // Mock first page to succeed, second page to fail
+        OcrResult successResult = new OcrResult(List.of(
+                new OcrResult.ExtractedRecipe("Apple Pie", 5, "apple", 0.90)
+        ));
+
+        Mockito.when(ocrAiService.extract(Mockito.any(Image.class)))
+                .thenReturn(successResult)
+                .thenThrow(new RuntimeException("AI service unavailable"));
+
+        // Create a cookbook
+        String cookbookId = given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "title": "Partial Success Test",
+                            "author": "Test Chef"
+                        }
+                        """)
+                .when()
+                .post("/api/cookbooks")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        // Upload two index pages
+        byte[] fakeJpegData = createMinimalJpegBytes();
+        given()
+                .contentType(ContentType.MULTIPART)
+                .multiPart("files", "index1.jpg", fakeJpegData, "image/jpeg")
+                .multiPart("files", "index2.jpg", fakeJpegData, "image/jpeg")
+                .when()
+                .post("/api/cookbooks/{id}/index-pages", cookbookId)
+                .then()
                 .statusCode(200)
-                .body("status", equalTo("FAILED"))
-                .body("errorMessage", containsString("AI service unavailable"));
+                .body("pageCount", equalTo(2));
+
+        // Start OCR processing
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/api/cookbooks/{id}/ocr/start", cookbookId)
+                .then()
+                .statusCode(202);
+
+        // Wait for processing - should return COMPLETED_WITH_ERRORS with partial results
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
+            given()
+                    .when()
+                    .get("/api/cookbooks/{id}/ocr/results", cookbookId)
+                    .then()
+                    .statusCode(200)
+                    .body("status", equalTo("COMPLETED_WITH_ERRORS"))
+                    .body("results.size()", equalTo(1))
+                    .body("results[0].recipeName", equalTo("Apple Pie"));
+        });
     }
 
     @Test
@@ -292,10 +386,18 @@ class OcrProcessingTest {
                 .when()
                 .post("/api/cookbooks/{id}/ocr/start", cookbookId)
                 .then()
-                .statusCode(200)
-                .body("status", equalTo("COMPLETED"))
-                .body("results", empty())
-                .body("errorMessage", nullValue());
+                .statusCode(202);
+
+        // Wait for processing to complete
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
+            given()
+                    .when()
+                    .get("/api/cookbooks/{id}/ocr/results", cookbookId)
+                    .then()
+                    .statusCode(200)
+                    .body("status", equalTo("COMPLETED"))
+                    .body("results", empty());
+        });
     }
 
     @Test
@@ -308,6 +410,62 @@ class OcrProcessingTest {
                 .post("/api/cookbooks/{id}/ocr/start", randomId)
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    void startOcrProcessing_shouldReturn409WhenAlreadyProcessing() {
+        // Mock AI service to take a while
+        OcrResult mockResult = new OcrResult(List.of(
+                new OcrResult.ExtractedRecipe("Test Recipe", 1, "test", 0.95)
+        ));
+        Mockito.when(ocrAiService.extract(Mockito.any(Image.class)))
+                .thenAnswer(invocation -> {
+                    Thread.sleep(2000); // Simulate slow processing
+                    return mockResult;
+                });
+
+        // Create a cookbook
+        String cookbookId = given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "title": "Concurrent Test Cookbook",
+                            "author": "Test Chef"
+                        }
+                        """)
+                .when()
+                .post("/api/cookbooks")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        // Upload an index page
+        byte[] fakeJpegData = createMinimalJpegBytes();
+        given()
+                .contentType(ContentType.MULTIPART)
+                .multiPart("files", "index1.jpg", fakeJpegData, "image/jpeg")
+                .when()
+                .post("/api/cookbooks/{id}/index-pages", cookbookId)
+                .then()
+                .statusCode(200);
+
+        // Start OCR processing first time
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/api/cookbooks/{id}/ocr/start", cookbookId)
+                .then()
+                .statusCode(202);
+
+        // Try to start again while still processing - should return 409
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/api/cookbooks/{id}/ocr/start", cookbookId)
+                .then()
+                .statusCode(409)
+                .body(containsString("already in progress"));
     }
 
     /**

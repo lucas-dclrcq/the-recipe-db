@@ -16,6 +16,14 @@ import java.util.UUID;
 @Table(name = "cookbook")
 public class Cookbook extends PanacheEntityBase {
 
+    public enum OcrStatus {
+        NONE,
+        PROCESSING,
+        COMPLETED,
+        COMPLETED_WITH_ERRORS,
+        FAILED
+    }
+
     @Id
     @GeneratedValue
     @UuidGenerator(style = UuidGenerator.Style.TIME)
@@ -46,6 +54,13 @@ public class Cookbook extends PanacheEntityBase {
     @Column(name = "has_cover", nullable = false)
     public boolean hasCover = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ocr_status", nullable = false)
+    public OcrStatus ocrStatus = OcrStatus.NONE;
+
+    @Column(name = "ocr_error_message")
+    public String ocrErrorMessage;
+
     public Cookbook() {
     }
 
@@ -66,5 +81,9 @@ public class Cookbook extends PanacheEntityBase {
 
     public long countRecipes() {
         return Recipe.countByCookbookId(this.id);
+    }
+
+    public static int updateOcrStatus(UUID id, OcrStatus status, String errorMessage) {
+        return update("ocrStatus = ?1, ocrErrorMessage = ?2 where id = ?3", status, errorMessage, id);
     }
 }
