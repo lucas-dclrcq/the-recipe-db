@@ -64,4 +64,8 @@ public class CookbookIndexPage extends PanacheEntityBase {
     public static List<CookbookIndexPage> findByCookbookIdOrdered(UUID cookbookId) {
         return list("cookbookId = ?1 ORDER BY pageOrder", cookbookId);
     }
+
+    public static long deleteByCookbookId(UUID cookbookId) {
+        return delete("cookbookId", cookbookId);
+    }
 }

@@ -139,6 +139,22 @@ public class Recipe extends PanacheEntityBase {
     }
 
     /**
+     * Delete all recipes for a cookbook and their ingredient associations.
+     */
+    public static long deleteByCookbookId(UUID cookbookId) {
+        // First delete the recipe_ingredient associations
+        getEntityManager().createNativeQuery("""
+                DELETE FROM recipe_ingredient
+                WHERE recipe_id IN (SELECT id FROM recipe WHERE cookbook_id = :cookbookId)
+                """)
+                .setParameter("cookbookId", cookbookId)
+                .executeUpdate();
+
+        // Then delete the recipes
+        return delete("cookbookId", cookbookId);
+    }
+
+    /**
      * Find recipes that contain a specific ingredient by ingredient ID.
      */
     public static List<Recipe> findByIngredientId(UUID ingredientId, int limit) {

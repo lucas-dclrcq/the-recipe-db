@@ -283,5 +283,126 @@ class CookbookResourceTest {
                 .then()
                 .statusCode(404);
     }
+
+    @Test
+    void deleteCookbook_shouldReturn404ForNonExistentCookbook() {
+        UUID randomId = UUID.randomUUID();
+
+        given()
+                .when()
+                .delete("/api/cookbooks/{id}", randomId)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void deleteCookbook_shouldDeleteCookbookWithoutRecipes() {
+        // Create a cookbook
+        String cookbookId = given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "title": "Cookbook To Delete",
+                            "author": "Delete Author"
+                        }
+                        """)
+                .when()
+                .post("/api/cookbooks")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        // Delete the cookbook
+        given()
+                .when()
+                .delete("/api/cookbooks/{id}", cookbookId)
+                .then()
+                .statusCode(204);
+
+        // Verify it's gone
+        given()
+                .when()
+                .get("/api/cookbooks/{id}", cookbookId)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void deleteCookbook_shouldDeleteCookbookAndItsRecipes() {
+        // Create a cookbook
+        String cookbookId = given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "title": "Cookbook With Recipes To Delete",
+                            "author": "Delete Author"
+                        }
+                        """)
+                .when()
+                .post("/api/cookbooks")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        // Add recipes to the cookbook
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "recipes": [
+                                {
+                                    "recipeName": "Recipe To Delete 1",
+                                    "pageNumber": 1,
+                                    "ingredient": "Ingredient A",
+                                    "keep": true
+                                },
+                                {
+                                    "recipeName": "Recipe To Delete 2",
+                                    "pageNumber": 2,
+                                    "ingredient": "Ingredient B",
+                                    "keep": true
+                                }
+                            ]
+                        }
+                        """)
+                .when()
+                .post("/api/cookbooks/{id}/confirm", cookbookId)
+                .then()
+                .statusCode(200)
+                .body("savedRecipeCount", equalTo(2));
+
+        // Verify cookbook has recipes
+        given()
+                .when()
+                .get("/api/cookbooks/{id}", cookbookId)
+                .then()
+                .statusCode(200)
+                .body("recipeCount", equalTo(2));
+
+        // Delete the cookbook
+        given()
+                .when()
+                .delete("/api/cookbooks/{id}", cookbookId)
+                .then()
+                .statusCode(204);
+
+        // Verify cookbook is gone
+        given()
+                .when()
+                .get("/api/cookbooks/{id}", cookbookId)
+                .then()
+                .statusCode(404);
+
+        // Verify recipes are also gone (search by cookbook ID should return empty)
+        given()
+                .queryParam("cookbookId", cookbookId)
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .body("recipes", empty());
+    }
 }
 

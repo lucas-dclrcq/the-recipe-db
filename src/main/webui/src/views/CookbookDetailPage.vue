@@ -2,19 +2,15 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
-import { ArrowLeftIcon, PhotoIcon, XMarkIcon } from '@heroicons/vue/24/outline'
-import { getApiCookbooksId, getApiCookbooksIdRecipes } from '../api/client'
+import { ArrowLeftIcon, PhotoIcon, XMarkIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { useCookbook } from '../composables/useCookbook'
 import RecipeCard from '../components/RecipeCard.vue'
-import type { Cookbook } from '../types/cookbook'
-import type { Recipe } from '../types/recipe'
 
 const route = useRoute()
 const router = useRouter()
+const { cookbook, recipes, isLoading, isDeleting, error, deleteError, fetchCookbook: fetchCookbookFromComposable, deleteCookbook, clearErrors } = useCookbook()
 
-const cookbook = ref<Cookbook | null>(null)
-const recipes = ref<Recipe[]>([])
-const isLoading = ref(true)
-const error = ref<string | null>(null)
+const showDeleteDialog = ref(false)
 
 const coverVersion = ref(0)
 const coverUrl = computed(() => {
@@ -147,37 +143,20 @@ async function uploadCover() {
   }
 }
 
-async function fetchCookbook() {
-  const id = route.params.id as string
-  if (!id) {
-    error.value = 'No cookbook ID provided'
-    isLoading.value = false
-    return
-  }
+function openDeleteDialog() {
+  clearErrors()
+  showDeleteDialog.value = true
+}
 
-  isLoading.value = true
-  error.value = null
+function closeDeleteDialog() {
+  showDeleteDialog.value = false
+}
 
-  try {
-    const [cookbookResponse, recipesResponse] = await Promise.all([
-      getApiCookbooksId(id),
-      getApiCookbooksIdRecipes(id),
-    ])
-
-    if (cookbookResponse.status === 200) {
-      cookbook.value = cookbookResponse.data as Cookbook
-    } else {
-      error.value = 'Cookbook not found'
-      return
-    }
-
-    if (recipesResponse.status === 200) {
-      recipes.value = recipesResponse.data as Recipe[]
-    }
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Failed to load cookbook'
-  } finally {
-    isLoading.value = false
+async function confirmDelete() {
+  if (!cookbook.value) return
+  const result = await deleteCookbook(cookbook.value.id)
+  if (result.success) {
+    router.push('/cookbooks')
   }
 }
 
@@ -190,7 +169,10 @@ function goBack() {
 }
 
 onMounted(() => {
-  fetchCookbook()
+  const id = route.params.id as string
+  if (id) {
+    fetchCookbookFromComposable(id)
+  }
 })
 </script>
 
@@ -259,6 +241,18 @@ onMounted(() => {
                 >
                   Search within this cookbook
                 </RouterLink>
+              </div>
+
+              <!-- Delete button -->
+              <div class="mt-4">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-md hover:bg-red-50"
+                  @click="openDeleteDialog"
+                >
+                  <TrashIcon class="h-4 w-4" />
+                  Delete Cookbook
+                </button>
               </div>
 
               <!-- OCR Status Section -->
@@ -392,6 +386,48 @@ onMounted(() => {
           <RecipeCard v-for="recipe in recipes" :key="recipe.id" :recipe="recipe" />
         </div>
       </template>
+    </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <div v-if="showDeleteDialog" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex min-h-screen items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black bg-opacity-30" @click="closeDeleteDialog"></div>
+        <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Delete Cookbook</h3>
+          <p class="text-gray-600 mb-4">
+            Are you sure you want to delete <strong>{{ cookbook?.title }}</strong>?
+          </p>
+          <p v-if="cookbook?.recipeCount && cookbook.recipeCount > 0" class="text-amber-600 text-sm mb-4">
+            This will also delete {{ cookbook.recipeCount }} recipe{{ cookbook.recipeCount === 1 ? '' : 's' }} in this cookbook.
+          </p>
+          <p class="text-gray-500 text-sm mb-4">
+            This action cannot be undone.
+          </p>
+
+          <div v-if="deleteError" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p class="text-sm text-red-600">{{ deleteError }}</p>
+          </div>
+
+          <div class="flex justify-end gap-3">
+            <button
+              type="button"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              :disabled="isDeleting"
+              @click="closeDeleteDialog"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 disabled:opacity-50"
+              :disabled="isDeleting"
+              @click="confirmDelete"
+            >
+              {{ isDeleting ? 'Deleting...' : 'Delete' }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

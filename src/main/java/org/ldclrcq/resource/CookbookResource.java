@@ -41,9 +41,24 @@ public class CookbookResource {
     
     @DELETE
     @Path("/{id}")
+    @Transactional
     public Response deleteCookbook(@PathParam("id") UUID id) {
+        Optional<Cookbook> cookbookOpt = Cookbook.findByIdOptional(id);
+        if (cookbookOpt.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(Map.of("error", "Cookbook not found"))
+                    .build();
+        }
+
+        // Delete related entities in order (respecting dependencies)
+        OcrResultEntity.deleteByCookbookId(id);
+        Recipe.deleteByCookbookId(id);
+        CookbookIndexPage.deleteByCookbookId(id);
+
+        // Delete the cookbook itself
         Cookbook.deleteById(id);
-        return Response.ok().build();
+
+        return Response.noContent().build();
     }
 
     @POST
