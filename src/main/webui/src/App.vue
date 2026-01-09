@@ -18,26 +18,31 @@ watch(
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 flex">
+  <div class="min-h-screen bg-cream flex pattern-grid">
+    <!-- Decorative floating shapes - visible on larger screens -->
+    <div class="hidden lg:block fixed top-20 right-10 w-16 h-16 bg-secondary rounded-full opacity-20 animate-float" aria-hidden="true"></div>
+    <div class="hidden lg:block fixed top-40 right-32 w-8 h-8 bg-primary opacity-15 rotate-45" aria-hidden="true"></div>
+    <div class="hidden lg:block fixed bottom-20 right-20 w-12 h-12 border-4 border-accent rounded-full opacity-20" aria-hidden="true"></div>
+
     <!-- Desktop/Tablet side nav -->
-    <aside class="hidden md:block w-60 border-r border-gray-200 bg-white fixed inset-y-0 left-0 z-20">
+    <aside class="hidden md:block w-64 sidebar-artistic fixed inset-y-0 left-0 z-20 overflow-y-auto">
       <SideNav />
     </aside>
 
     <!-- Mobile top bar -->
-    <div class="md:hidden fixed top-0 inset-x-0 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-30">
+    <div class="md:hidden fixed top-0 inset-x-0 h-16 bg-warm-white border-b-4 border-soft-black flex items-center justify-between px-4 z-30">
       <button
         type="button"
-        class="p-2 rounded-md border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        class="p-2 rounded-xl border-3 border-soft-black bg-white hover:bg-cream transition-colors shadow-[3px_3px_0_var(--color-soft-black)]"
         aria-label="Open navigation"
         @click="isMobileNavOpen = true"
       >
-        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        <svg class="h-5 w-5 text-soft-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <RouterLink to="/" class="font-semibold text-gray-900">The Recipe DB</RouterLink>
-      <span class="w-9" aria-hidden="true"></span>
+      <RouterLink to="/" class="logo-artistic">The Recipe DB</RouterLink>
+      <span class="w-10" aria-hidden="true"></span>
     </div>
 
     <!-- Mobile drawer overlay -->
@@ -47,24 +52,24 @@ watch(
       aria-hidden="true"
       @click="isMobileNavOpen = false"
     >
-      <div class="absolute inset-0 bg-black/30"></div>
+      <div class="absolute inset-0 bg-soft-black/40 backdrop-blur-sm"></div>
     </div>
 
     <!-- Mobile drawer -->
     <aside
-      class="md:hidden fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-50 transform transition-transform"
+      class="md:hidden fixed inset-y-0 left-0 w-72 sidebar-artistic z-50 transform transition-transform duration-300 ease-out"
       :class="isMobileNavOpen ? 'translate-x-0' : '-translate-x-full'"
     >
-      <div class="h-14 flex items-center justify-between px-4 border-b border-gray-200">
-        <span class="font-semibold">Menu</span>
+      <div class="h-16 flex items-center justify-between px-5 border-b-4 border-soft-black bg-secondary">
+        <span class="font-black text-soft-black text-lg tracking-tight">Menu</span>
         <button
           type="button"
-          class="p-2 rounded-md border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="p-2 rounded-xl border-3 border-soft-black bg-white hover:bg-cream transition-colors shadow-[3px_3px_0_var(--color-soft-black)]"
           aria-label="Close navigation"
           @click="isMobileNavOpen = false"
         >
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <svg class="h-5 w-5 text-soft-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
@@ -72,8 +77,8 @@ watch(
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 min-w-0 md:ml-60 w-full">
-      <div class="md:py-6 md:px-8 px-4" :class="{'pt-20': true}">
+    <main class="flex-1 min-w-0 md:ml-64 w-full">
+      <div class="md:py-8 md:px-10 px-4 pt-20 pb-8">
         <RouterView />
       </div>
     </main>

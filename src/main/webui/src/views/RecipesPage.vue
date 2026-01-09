@@ -79,15 +79,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-6xl mx-auto px-4 py-8">
-      <!-- Header -->
-      <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Recipes</h1>
+  <div class="min-h-screen">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header with artistic styling -->
+      <div class="page-header mb-8 relative">
+        <h1 class="page-title">Recipes</h1>
+        <!-- Decorative elements -->
+        <div class="absolute -top-2 right-0 w-8 h-8 bg-secondary rounded-full opacity-60" aria-hidden="true"></div>
+        <div class="absolute top-4 right-12 w-4 h-4 bg-accent" style="transform: rotate(45deg);" aria-hidden="true"></div>
       </div>
 
       <!-- Search and filters -->
-      <div class="mb-6 space-y-3">
+      <div class="mb-8 space-y-4">
         <PageSearchBar
           v-model="query"
           placeholder="Search recipes..."
@@ -98,10 +101,10 @@ onMounted(() => {
         />
 
         <!-- Filter panel -->
-        <div v-if="showFilters" class="p-4 bg-white rounded-lg border border-gray-200 space-y-4">
-          <div class="grid gap-4 sm:grid-cols-2">
+        <div v-if="showFilters" class="filter-panel p-6 space-y-5 animate-pop-in">
+          <div class="grid gap-5 sm:grid-cols-2">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label class="block text-sm font-bold text-soft-black mb-2">
                 Ingredient
               </label>
               <IngredientAutocomplete
@@ -110,7 +113,7 @@ onMounted(() => {
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label class="block text-sm font-bold text-soft-black mb-2">
                 Cookbook
               </label>
               <CookbookSelector
@@ -119,19 +122,33 @@ onMounted(() => {
               />
             </div>
             <div class="sm:col-span-2">
-              <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                <input type="checkbox" v-model="availableNow" @change="handleAvailableNowChange(($event.target as HTMLInputElement).checked)" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-                Ingredient available now
+              <label class="inline-flex items-center gap-3 cursor-pointer group">
+                <span class="relative">
+                  <input
+                    type="checkbox"
+                    v-model="availableNow"
+                    @change="handleAvailableNowChange(($event.target as HTMLInputElement).checked)"
+                    class="sr-only peer"
+                  />
+                  <span class="w-6 h-6 rounded-lg border-3 border-soft-black bg-white flex items-center justify-center transition-all peer-checked:bg-accent peer-checked:border-accent peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-accent">
+                    <svg v-if="availableNow" class="w-4 h-4 text-soft-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </span>
+                </span>
+                <span class="text-sm font-bold text-soft-black group-hover:text-primary transition-colors">
+                  Ingredients available now
+                </span>
               </label>
             </div>
           </div>
-          <div class="flex gap-2 justify-end">
+          <div class="flex gap-3 justify-end pt-2">
             <button
               type="button"
-              class="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+              class="btn-secondary !py-2 !px-4 text-sm"
               @click="handleClearFilters"
             >
-              Clear
+              Clear All
             </button>
           </div>
         </div>
@@ -146,11 +163,18 @@ onMounted(() => {
         />
 
         <!-- Error with retry -->
-        <div v-if="error" class="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
-          <p class="text-sm text-red-600">{{ error }}</p>
+        <div v-if="error" class="card-pop p-5 border-primary flex items-center justify-between bg-primary/5">
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </span>
+            <p class="text-sm font-bold text-soft-black">{{ error }}</p>
+          </div>
           <button
             type="button"
-            class="px-3 py-1.5 text-sm rounded-md bg-red-100 text-red-700 hover:bg-red-200"
+            class="btn-primary !py-2 !px-4 text-sm"
             @click="searchRecipes()"
           >
             Retry

@@ -99,11 +99,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="min-h-screen">
+    <div class="max-w-4xl mx-auto">
+      <!-- Back button -->
       <button
         type="button"
-        class="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-6"
+        class="inline-flex items-center gap-2 text-sm font-bold text-charcoal hover:text-soft-black mb-6 transition-colors"
         @click="goBack"
       >
         <ArrowLeftIcon class="h-4 w-4" />
@@ -112,86 +113,84 @@ onMounted(() => {
 
       <!-- Loading state -->
       <div v-if="isLoading" class="flex justify-center py-12">
-        <svg
-          class="animate-spin h-8 w-8 text-indigo-600"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
+        <div class="flex items-center gap-3 px-6 py-3 bg-white rounded-xl border-3 border-soft-black shadow-[4px_4px_0_var(--color-soft-black)]">
+          <svg class="animate-spin h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="font-bold text-soft-black">Loading...</span>
+        </div>
       </div>
 
       <!-- Error state -->
       <div v-else-if="error" class="text-center py-12">
-        <p class="text-red-600">{{ error }}</p>
-        <button
-          type="button"
-          class="mt-4 text-indigo-600 hover:text-indigo-800"
-          @click="goBack"
-        >
-          Go back
-        </button>
+        <div class="empty-state">
+          <div class="empty-state-icon bg-primary/10">
+            <svg class="w-10 h-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <p class="text-lg font-bold text-soft-black mb-2">{{ error }}</p>
+          <button
+            type="button"
+            class="btn-secondary !py-2 !px-4 text-sm"
+            @click="goBack"
+          >
+            Go back
+          </button>
+        </div>
       </div>
 
       <!-- View Mode -->
       <template v-else-if="ingredient && !isEditMode">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div class="flex items-start justify-between">
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900 capitalize">{{ ingredient.name }}</h1>
-              <p v-if="ingredient.disambiguations.length > 0" class="mt-2 text-gray-600">
+        <div class="card-pop p-6">
+          <div class="flex flex-col sm:flex-row items-start justify-between gap-4">
+            <div class="flex-1">
+              <h1 class="text-3xl font-bold text-soft-black capitalize">{{ ingredient.name }}</h1>
+              <p v-if="ingredient.disambiguations.length > 0" class="mt-2 text-charcoal">
                 Also known as:
-                <span class="capitalize">{{ ingredient.disambiguations.join(', ') }}</span>
+                <span class="capitalize font-medium">{{ ingredient.disambiguations.join(', ') }}</span>
               </p>
-              <p class="mt-3 text-sm text-gray-500">
-                Used in {{ ingredient.recipeCount }} recipe{{ ingredient.recipeCount === 1 ? '' : 's' }}
-              </p>
-              <div class="mt-4">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="text-sm font-medium text-gray-700">Availability</span>
+              <div class="mt-3">
+                <span class="badge-page">{{ ingredient.recipeCount }} recipe{{ ingredient.recipeCount === 1 ? '' : 's' }}</span>
+              </div>
+
+              <!-- Availability section -->
+              <div class="mt-6">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-sm font-bold text-soft-black">Availability</span>
                   <span
-                    class="text-xs px-2 py-0.5 rounded-full"
-                    :class="isAvailableNow ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700'"
+                    class="text-xs font-bold px-3 py-1 rounded-lg border-2"
+                    :class="isAvailableNow ? 'bg-accent/20 border-accent text-accent-dark' : 'bg-cream border-soft-black/20 text-charcoal'"
                   >
-                    {{ isAvailableNow ? 'Available now' : 'Not in season now' }}
+                    {{ isAvailableNow ? 'Available now' : 'Not in season' }}
                   </span>
                 </div>
                 <div class="grid grid-cols-6 gap-2">
                   <span
                     v-for="m in 12"
                     :key="m"
-                    class="text-xs px-2 py-1 rounded border text-center"
-                    :class="ingredient.availableMonths.includes(m) ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-white border-gray-200 text-gray-500'"
+                    class="text-xs font-bold px-2 py-1.5 rounded-lg border-2 text-center transition-all"
+                    :class="ingredient.availableMonths.includes(m) ? 'bg-accent/20 border-accent text-accent-dark' : 'bg-white border-soft-black/10 text-charcoal'"
                   >{{ monthNames[m-1] }}</span>
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-2">
+
+            <!-- Action buttons -->
+            <div class="flex items-center gap-2 flex-shrink-0">
               <button
                 type="button"
-                class="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                class="btn-secondary !py-2 !px-4 text-sm"
                 @click="enterEditMode"
               >
-                <PencilIcon class="h-4 w-4" />
+                <PencilIcon class="h-4 w-4 mr-1 inline" />
                 Edit
               </button>
               <button
                 v-if="canDelete"
                 type="button"
-                class="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-md hover:bg-red-50"
+                class="inline-flex items-center gap-1 px-4 py-2 text-sm font-bold text-primary bg-white border-3 border-primary rounded-xl hover:bg-primary/5 transition-colors"
                 @click="openDeleteDialog"
               >
                 <TrashIcon class="h-4 w-4" />
@@ -202,18 +201,18 @@ onMounted(() => {
 
           <!-- Recipe preview -->
           <div v-if="ingredient.recipeCount > 0" class="mt-8">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">
-              Recipes using this ingredient
-            </h2>
-            <div class="border border-gray-200 rounded-lg divide-y divide-gray-200">
+            <div class="page-header !mb-4 relative">
+              <h2 class="text-lg font-bold text-soft-black">Recipes using this ingredient</h2>
+            </div>
+            <div class="border-3 border-soft-black rounded-xl overflow-hidden divide-y-2 divide-soft-black/10">
               <RouterLink
                 v-for="recipe in previewRecipes"
                 :key="recipe.id"
                 :to="{ name: 'recipe-detail', params: { id: recipe.id } }"
-                class="block px-4 py-3 hover:bg-gray-50"
+                class="block px-4 py-3 hover:bg-cream transition-colors"
               >
-                <div class="font-medium text-gray-900">{{ recipe.name }}</div>
-                <div class="text-sm text-gray-500">
+                <div class="font-bold text-soft-black">{{ recipe.name }}</div>
+                <div class="text-sm text-charcoal">
                   <span v-if="recipe.cookbookTitle">{{ recipe.cookbookTitle }}</span>
                   <span v-if="recipe.cookbookTitle && recipe.pageNumber">, </span>
                   <span v-if="recipe.pageNumber">p. {{ recipe.pageNumber }}</span>
@@ -223,7 +222,7 @@ onMounted(() => {
             <RouterLink
               v-if="hasMoreRecipes"
               :to="{ path: '/', query: { ingredient: ingredient.name } }"
-              class="mt-3 inline-block text-sm text-indigo-600 hover:text-indigo-800"
+              class="mt-4 inline-block text-sm font-bold text-primary hover:text-primary-dark transition-colors"
             >
               View all {{ ingredient.recipeCount }} recipes
             </RouterLink>
@@ -233,31 +232,31 @@ onMounted(() => {
 
       <!-- Edit Mode -->
       <template v-else-if="ingredient && isEditMode">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h1 class="text-xl font-semibold text-gray-900 mb-6">Edit Ingredient</h1>
+        <div class="card-pop p-6">
+          <h1 class="text-2xl font-bold text-soft-black mb-6">Edit Ingredient</h1>
 
-          <div v-if="saveError" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p class="text-sm text-red-600">{{ saveError }}</p>
+          <div v-if="saveError" class="mb-6 p-4 bg-primary/10 border-2 border-primary rounded-xl">
+            <p class="text-sm font-bold text-primary">{{ saveError }}</p>
           </div>
 
           <div class="space-y-6">
             <!-- Name field -->
             <div>
-              <label for="ingredient-name" class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="ingredient-name" class="block text-sm font-bold text-soft-black mb-2">
                 Name
               </label>
               <input
                 id="ingredient-name"
                 v-model="editName"
                 type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                class="input-field w-full"
                 placeholder="Ingredient name"
               />
             </div>
 
             <!-- Disambiguations field -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label class="block text-sm font-bold text-soft-black mb-2">
                 Disambiguations (aliases)
               </label>
               <div class="space-y-3">
@@ -266,35 +265,35 @@ onMounted(() => {
                   <span
                     v-for="(dis, index) in editDisambiguations"
                     :key="index"
-                    class="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                    class="inline-flex items-center gap-2 px-3 py-1.5 bg-cream text-soft-black rounded-lg text-sm font-bold border-2 border-soft-black/20"
                   >
                     <span class="capitalize">{{ dis }}</span>
                     <button
                       type="button"
-                      class="text-gray-500 hover:text-gray-700"
+                      class="text-charcoal hover:text-primary transition-colors"
                       @click="removeDisambiguation(index)"
                     >
                       <XMarkIcon class="h-4 w-4" />
                     </button>
                   </span>
                 </div>
-                <p v-else class="text-sm text-gray-500 italic">No aliases defined</p>
+                <p v-else class="text-sm text-charcoal italic">No aliases defined</p>
 
                 <!-- Add new disambiguation -->
                 <div class="flex gap-2">
                   <input
                     v-model="newDisambiguation"
                     type="text"
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    class="input-field flex-1"
                     placeholder="Add new alias..."
                     @keyup.enter="addDisambiguation"
                   />
                   <button
                     type="button"
-                    class="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-300 rounded-md hover:bg-indigo-100"
+                    class="btn-accent !py-2 !px-4 text-sm"
                     @click="addDisambiguation"
                   >
-                    <PlusIcon class="h-4 w-4" />
+                    <PlusIcon class="h-4 w-4 mr-1 inline" />
                     Add
                   </button>
                 </div>
@@ -303,21 +302,35 @@ onMounted(() => {
 
             <!-- Availability months selector -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-bold text-soft-black mb-3">
                 Availability by month
               </label>
-              <div class="grid grid-cols-6 gap-2">
-                <label v-for="m in 12" :key="m" class="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    :value="m"
-                    v-model="editAvailableMonths"
-                  />
-                  <span :class="{'font-medium text-gray-900': m === currentMonth}">{{ monthNames[m-1] }}</span>
+              <div class="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                <label
+                  v-for="m in 12"
+                  :key="m"
+                  class="flex items-center gap-2 cursor-pointer group"
+                >
+                  <span class="relative">
+                    <input
+                      type="checkbox"
+                      class="sr-only peer"
+                      :value="m"
+                      v-model="editAvailableMonths"
+                    />
+                    <span class="w-5 h-5 rounded-lg border-3 border-soft-black bg-white flex items-center justify-center transition-all peer-checked:bg-accent peer-checked:border-accent peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-accent">
+                      <svg v-if="editAvailableMonths.includes(m)" class="w-3 h-3 text-soft-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </span>
+                  </span>
+                  <span
+                    class="text-sm font-bold transition-colors"
+                    :class="m === currentMonth ? 'text-primary' : 'text-soft-black group-hover:text-primary'"
+                  >{{ monthNames[m-1] }}</span>
                 </label>
               </div>
-              <p class="mt-2 text-xs text-gray-500">Tip: months are 1-12 (Jan-Dec). Current month highlighted.</p>
+              <p class="mt-3 text-xs text-charcoal">Current month highlighted in color.</p>
             </div>
           </div>
 
@@ -325,7 +338,7 @@ onMounted(() => {
           <div class="mt-8 flex justify-end gap-3">
             <button
               type="button"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              class="btn-secondary !py-2 !px-4 text-sm"
               :disabled="isSaving"
               @click="cancelEdit"
             >
@@ -333,7 +346,7 @@ onMounted(() => {
             </button>
             <button
               type="button"
-              class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 disabled:opacity-50"
+              class="btn-primary !py-2 !px-4 text-sm"
               :disabled="isSaving || !editName.trim()"
               @click="saveChanges"
             >
@@ -347,22 +360,22 @@ onMounted(() => {
     <!-- Delete Confirmation Dialog -->
     <div v-if="showDeleteDialog" class="fixed inset-0 z-50 overflow-y-auto">
       <div class="flex min-h-screen items-center justify-center p-4">
-        <div class="fixed inset-0 bg-black bg-opacity-30" @click="closeDeleteDialog"></div>
-        <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Delete Ingredient</h3>
-          <p class="text-gray-600 mb-4">
-            Are you sure you want to delete <strong class="capitalize">{{ ingredient?.name }}</strong>?
+        <div class="fixed inset-0 bg-soft-black/40" @click="closeDeleteDialog"></div>
+        <div class="relative card-pop max-w-md w-full p-6 animate-pop-in">
+          <h3 class="text-xl font-bold text-soft-black mb-3">Delete Ingredient</h3>
+          <p class="text-charcoal mb-4">
+            Are you sure you want to delete <strong class="capitalize text-soft-black">{{ ingredient?.name }}</strong>?
             This action cannot be undone.
           </p>
 
-          <div v-if="deleteError" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p class="text-sm text-red-600">{{ deleteError }}</p>
+          <div v-if="deleteError" class="mb-4 p-3 bg-primary/10 border-2 border-primary rounded-lg">
+            <p class="text-sm font-bold text-primary">{{ deleteError }}</p>
           </div>
 
           <div class="flex justify-end gap-3">
             <button
               type="button"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              class="btn-secondary !py-2 !px-4 text-sm"
               :disabled="isDeleting"
               @click="closeDeleteDialog"
             >
@@ -370,7 +383,7 @@ onMounted(() => {
             </button>
             <button
               type="button"
-              class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 disabled:opacity-50"
+              class="btn-primary !py-2 !px-4 text-sm"
               :disabled="isDeleting"
               @click="confirmDelete"
             >

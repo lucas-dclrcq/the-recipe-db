@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { XMarkIcon } from '@heroicons/vue/20/solid'
 import type { SearchFilters } from '../types/recipe'
 
 defineProps<{
@@ -14,54 +13,63 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div v-if="filters.q || filters.ingredient || filters.cookbookId" class="flex flex-wrap items-center gap-2">
-    <span class="text-sm text-gray-500">Filters:</span>
+  <div v-if="filters.q || filters.ingredient || filters.cookbookId" class="flex flex-wrap items-center gap-3">
+    <span class="text-sm font-bold text-soft-black">Active filters:</span>
 
     <span
       v-if="filters.q"
-      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+      class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-bold bg-electric-blue text-white border-2 border-soft-black shadow-[2px_2px_0_var(--color-soft-black)]"
     >
-      Name: {{ filters.q }}
+      <span class="text-white/70">Name:</span> {{ filters.q }}
       <button
         type="button"
-        class="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-blue-400 hover:bg-blue-200 hover:text-blue-500 focus:outline-none focus:bg-blue-500 focus:text-white"
+        class="flex-shrink-0 w-5 h-5 rounded-lg bg-white/20 hover:bg-white/30 inline-flex items-center justify-center transition-colors"
         @click="emit('removeFilter', 'q')"
+        aria-label="Remove name filter"
       >
-        <XMarkIcon class="h-3 w-3" />
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
     </span>
 
     <span
       v-if="filters.ingredient"
-      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800"
+      class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-bold bg-accent text-soft-black border-2 border-soft-black shadow-[2px_2px_0_var(--color-soft-black)]"
     >
-      Ingredient: {{ filters.ingredient }}
+      <span class="opacity-70">Ingredient:</span> {{ filters.ingredient }}
       <button
         type="button"
-        class="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-green-400 hover:bg-green-200 hover:text-green-500 focus:outline-none focus:bg-green-500 focus:text-white"
+        class="flex-shrink-0 w-5 h-5 rounded-lg bg-soft-black/10 hover:bg-soft-black/20 inline-flex items-center justify-center transition-colors"
         @click="emit('removeFilter', 'ingredient')"
+        aria-label="Remove ingredient filter"
       >
-        <XMarkIcon class="h-3 w-3" />
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
     </span>
 
     <span
       v-if="filters.cookbookId"
-      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-sm font-medium bg-purple-100 text-purple-800"
+      class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-bold bg-pop-purple text-white border-2 border-soft-black shadow-[2px_2px_0_var(--color-soft-black)]"
     >
-      Cookbook: {{ cookbookTitle || 'Selected' }}
+      <span class="text-white/70">Cookbook:</span> {{ cookbookTitle || 'Selected' }}
       <button
         type="button"
-        class="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-purple-400 hover:bg-purple-200 hover:text-purple-500 focus:outline-none focus:bg-purple-500 focus:text-white"
+        class="flex-shrink-0 w-5 h-5 rounded-lg bg-white/20 hover:bg-white/30 inline-flex items-center justify-center transition-colors"
         @click="emit('removeFilter', 'cookbookId')"
+        aria-label="Remove cookbook filter"
       >
-        <XMarkIcon class="h-3 w-3" />
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
     </span>
 
     <button
       type="button"
-      class="text-sm text-gray-500 hover:text-gray-700 underline"
+      class="text-sm font-bold text-primary hover:text-primary-dark underline underline-offset-2 transition-colors"
       @click="emit('clearAll')"
     >
       Clear all

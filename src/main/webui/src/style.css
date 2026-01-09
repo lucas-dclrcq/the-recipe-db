@@ -1,1 +1,610 @@
 @import "tailwindcss";
+
+/* ========================================
+   THE RECIPE DB - Art-Inspired Design System
+   Inspired by: Bauhaus, Memphis Design, Pop Art, De Stijl
+   ======================================== */
+
+/* Custom CSS Variables - Bold Color Palette */
+@theme {
+  /* Primary Colors - De Stijl inspired */
+  --color-primary: #FF3366;
+  --color-primary-dark: #E6004C;
+  --color-primary-light: #FF6B8F;
+
+  /* Secondary - Bauhaus Yellow */
+  --color-secondary: #FFD23F;
+  --color-secondary-dark: #E6B800;
+  --color-secondary-light: #FFE066;
+
+  /* Accent - Memphis Teal */
+  --color-accent: #00D4AA;
+  --color-accent-dark: #00B894;
+  --color-accent-light: #55EFC4;
+
+  /* Supporting Colors */
+  --color-electric-blue: #3B82F6;
+  --color-pop-purple: #8B5CF6;
+  --color-warm-coral: #FF7F50;
+
+  /* Neutrals - Warm undertones */
+  --color-cream: #FFF8F0;
+  --color-warm-white: #FFFCF7;
+  --color-soft-black: #1A1A2E;
+  --color-charcoal: #2D2D44;
+
+  /* Geometric Pattern Colors */
+  --color-geo-red: #FF3366;
+  --color-geo-blue: #3B82F6;
+  --color-geo-yellow: #FFD23F;
+  --color-geo-green: #00D4AA;
+}
+
+/* ========================================
+   Typography - Bold and Expressive
+   ======================================== */
+
+@font-face {
+  font-family: 'System Display';
+  src: local('Avenir Next'), local('Avenir'), local('Helvetica Neue'), local('Segoe UI');
+  font-weight: 400 900;
+}
+
+html {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Bold Display Headings */
+.heading-display {
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.heading-artistic {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-pop-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   Geometric Background Patterns
+   ======================================== */
+
+/* Subtle grid pattern */
+.pattern-grid {
+  background-image:
+    linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Memphis-style dots */
+.pattern-dots {
+  background-image: radial-gradient(circle, var(--color-geo-red) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Diagonal lines - Bauhaus */
+.pattern-diagonal {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(255, 51, 102, 0.05) 10px,
+    rgba(255, 51, 102, 0.05) 20px
+  );
+}
+
+/* ========================================
+   Decorative Geometric Elements
+   ======================================== */
+
+/* Corner decorations */
+.geo-corner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 48px;
+  height: 48px;
+  background: var(--color-secondary);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  opacity: 0.9;
+}
+
+.geo-corner-left::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  background: var(--color-accent);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  opacity: 0.9;
+}
+
+/* Circle accent */
+.geo-circle::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+/* Floating shapes decoration */
+.floating-shapes {
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-shapes::before,
+.floating-shapes::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+.floating-shapes::before {
+  top: 20%;
+  right: -10px;
+  width: 60px;
+  height: 60px;
+  border: 4px solid var(--color-secondary);
+  border-radius: 50%;
+  opacity: 0.3;
+}
+
+.floating-shapes::after {
+  bottom: 10%;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  background: var(--color-accent);
+  opacity: 0.2;
+  transform: rotate(45deg);
+}
+
+/* ========================================
+   Card Styles - Pop Art Influenced
+   ======================================== */
+
+.card-pop {
+  background: white;
+  border: 3px solid var(--color-soft-black);
+  border-radius: 16px;
+  box-shadow: 6px 6px 0 var(--color-soft-black);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card-pop:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 var(--color-soft-black);
+}
+
+.card-pop:active {
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0 var(--color-soft-black);
+}
+
+/* Memphis style card with colorful border */
+.card-memphis {
+  background: white;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(white, white),
+    linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-accent) 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card-memphis:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ========================================
+   Button Styles - Bold and Playful
+   ======================================== */
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 3px solid var(--color-soft-black);
+  box-shadow: 4px 4px 0 var(--color-soft-black);
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--color-soft-black);
+}
+
+.btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--color-soft-black);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--color-soft-black);
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 3px solid var(--color-soft-black);
+  box-shadow: 4px 4px 0 var(--color-soft-black);
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--color-cream);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--color-soft-black);
+}
+
+.btn-accent {
+  background: var(--color-secondary);
+  color: var(--color-soft-black);
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 3px solid var(--color-soft-black);
+  box-shadow: 4px 4px 0 var(--color-soft-black);
+  transition: all 0.15s ease;
+}
+
+.btn-accent:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--color-soft-black);
+}
+
+/* ========================================
+   Badge/Tag Styles - Vibrant
+   ======================================== */
+
+.badge-ingredient {
+  background: linear-gradient(135deg, var(--color-accent-light) 0%, var(--color-accent) 100%);
+  color: var(--color-soft-black);
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  border: 2px solid var(--color-soft-black);
+}
+
+.badge-page {
+  background: var(--color-secondary);
+  color: var(--color-soft-black);
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  border: 2px solid var(--color-soft-black);
+}
+
+.badge-status {
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  border: 2px solid currentColor;
+}
+
+.badge-status-processing {
+  background: var(--color-electric-blue);
+  color: white;
+  border-color: var(--color-soft-black);
+}
+
+.badge-status-success {
+  background: var(--color-accent);
+  color: var(--color-soft-black);
+  border-color: var(--color-soft-black);
+}
+
+.badge-status-warning {
+  background: var(--color-secondary);
+  color: var(--color-soft-black);
+  border-color: var(--color-soft-black);
+}
+
+.badge-status-error {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-soft-black);
+}
+
+/* ========================================
+   Navigation Styles
+   ======================================== */
+
+.nav-item {
+  position: relative;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: var(--color-cream);
+}
+
+.nav-item.active {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 3px 3px 0 var(--color-soft-black);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background: var(--color-secondary);
+  border-radius: 2px;
+}
+
+/* ========================================
+   Input Styles
+   ======================================== */
+
+.input-field {
+  border: 3px solid var(--color-soft-black);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.input-field:focus {
+  outline: none;
+  box-shadow: 4px 4px 0 var(--color-secondary);
+  transform: translate(-2px, -2px);
+}
+
+.input-field::placeholder {
+  color: #9CA3AF;
+}
+
+/* ========================================
+   Sidebar Styles
+   ======================================== */
+
+.sidebar-artistic {
+  background: var(--color-warm-white);
+  border-right: 4px solid var(--color-soft-black);
+  position: relative;
+}
+
+.sidebar-artistic::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to top,
+    var(--color-secondary) 0%,
+    transparent 100%
+  );
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* Logo styling */
+.logo-artistic {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-pop-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   Page Header Styles
+   ======================================== */
+
+.page-header {
+  position: relative;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 6px;
+  background: var(--color-primary);
+  border-radius: 3px;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--color-soft-black);
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+.animate-pop-in {
+  animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ========================================
+   Skeleton Loading - More Fun
+   ======================================== */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-artistic {
+  background: linear-gradient(
+    90deg,
+    var(--color-cream) 25%,
+    #E8E0D5 50%,
+    var(--color-cream) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* ========================================
+   Scrollbar Styling
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-charcoal);
+  border-radius: 6px;
+  border: 3px solid var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-soft-black);
+}
+
+/* ========================================
+   Filter Panel
+   ======================================== */
+
+.filter-panel {
+  background: white;
+  border: 3px solid var(--color-soft-black);
+  border-radius: 16px;
+  box-shadow: 4px 4px 0 var(--color-soft-black);
+}
+
+/* ========================================
+   Empty State
+   ======================================== */
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--color-charcoal);
+}
+
+.empty-state-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 16px;
+  background: var(--color-cream);
+  border: 3px solid var(--color-soft-black);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 4px 4px 0 var(--color-soft-black);
+}
+
+/* ========================================
+   Focus States - Accessibility
+   ======================================== */
+
+*:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   Utility Classes
+   ======================================== */
+
+.bg-art-primary { background-color: var(--color-primary); }
+.bg-art-secondary { background-color: var(--color-secondary); }
+.bg-art-accent { background-color: var(--color-accent); }
+.bg-art-cream { background-color: var(--color-cream); }
+.bg-art-warm-white { background-color: var(--color-warm-white); }
+
+.text-art-primary { color: var(--color-primary); }
+.text-art-secondary { color: var(--color-secondary); }
+.text-art-accent { color: var(--color-accent); }
+.text-art-dark { color: var(--color-soft-black); }
+
+.border-art-dark { border-color: var(--color-soft-black); }
+.border-art-primary { border-color: var(--color-primary); }

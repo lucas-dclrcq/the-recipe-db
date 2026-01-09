@@ -98,66 +98,68 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-3xl mx-auto px-4 py-8">
+  <div class="min-h-screen">
+    <div class="max-w-3xl mx-auto">
+      <!-- Back button -->
       <button
         type="button"
-        class="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-6"
+        class="inline-flex items-center gap-2 text-sm font-bold text-charcoal hover:text-soft-black mb-6 transition-colors"
         @click="goBack"
       >
         <ArrowLeftIcon class="h-4 w-4" />
         Back to search
       </button>
 
+      <!-- Loading state -->
       <div v-if="isLoading" class="flex justify-center py-12">
-        <svg
-          class="animate-spin h-8 w-8 text-indigo-600"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
+        <div class="flex items-center gap-3 px-6 py-3 bg-white rounded-xl border-3 border-soft-black shadow-[4px_4px_0_var(--color-soft-black)]">
+          <svg class="animate-spin h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="font-bold text-soft-black">Loading...</span>
+        </div>
       </div>
 
+      <!-- Error state -->
       <div v-else-if="error" class="text-center py-12">
-        <p class="text-red-600">{{ error }}</p>
-        <button
-          type="button"
-          class="mt-4 text-indigo-600 hover:text-indigo-800"
-          @click="goBack"
-        >
-          Go back
-        </button>
+        <div class="empty-state">
+          <div class="empty-state-icon bg-primary/10">
+            <svg class="w-10 h-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <p class="text-lg font-bold text-soft-black mb-2">{{ error }}</p>
+          <button
+            type="button"
+            class="btn-secondary !py-2 !px-4 text-sm"
+            @click="goBack"
+          >
+            Go back
+          </button>
+        </div>
       </div>
 
-      <div v-else-if="recipe" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div class="px-6 py-8">
-          <div class="flex items-start justify-between">
-            <h1 class="text-2xl font-bold text-gray-900">{{ recipe.name }}</h1>
-            <span class="flex-shrink-0 ml-4 px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
+      <!-- Recipe content -->
+      <div v-else-if="recipe" class="card-pop overflow-hidden">
+        <!-- Header section -->
+        <div class="p-6 pb-0">
+          <div class="flex flex-col sm:flex-row items-start justify-between gap-3">
+            <h1 class="text-3xl font-bold text-soft-black">{{ recipe.name }}</h1>
+            <span class="badge-page flex-shrink-0">
               Page {{ recipe.pageNumber }}
             </span>
           </div>
 
-          <div class="mt-4 flex items-center gap-2 text-gray-600">
-            <BookOpenIcon class="h-5 w-5" />
+          <!-- Cookbook link -->
+          <div class="mt-4 flex items-center gap-2">
+            <span class="w-8 h-8 rounded-lg bg-electric-blue/20 flex items-center justify-center">
+              <BookOpenIcon class="h-4 w-4 text-electric-blue" />
+            </span>
             <RouterLink
               v-if="recipe.cookbookId"
               :to="`/cookbooks/${recipe.cookbookId}`"
-              class="hover:text-indigo-600"
+              class="text-charcoal hover:text-primary font-medium transition-colors"
             >
               <span v-if="recipe.cookbookTitle">{{ recipe.cookbookTitle }}</span>
               <span v-if="recipe.cookbookTitle && recipe.cookbookAuthor"> by </span>
@@ -166,24 +168,29 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="border-t border-gray-200 px-6 py-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">Ingredients</h2>
+        <!-- Ingredients section -->
+        <div class="p-6 mt-4 border-t-3 border-soft-black/10">
+          <div class="page-header !mb-4 relative">
+            <h2 class="text-lg font-bold text-soft-black">Ingredients</h2>
+          </div>
+
           <div v-if="recipe.ingredients.length > 0" class="flex flex-wrap gap-2 mb-4">
             <RouterLink
               v-for="ingredient in recipe.ingredients"
               :key="ingredient"
               :to="{ path: '/', query: { ingredient } }"
-              class="inline-flex items-center px-3 py-1 text-sm font-medium text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100"
+              class="badge-ingredient hover:shadow-[2px_2px_0_var(--color-soft-black)] transition-all"
             >
               {{ ingredient }}
             </RouterLink>
           </div>
-          <p v-else class="text-gray-500 text-sm mb-4">No ingredients yet.</p>
+          <p v-else class="text-charcoal text-sm mb-4 italic">No ingredients yet.</p>
 
+          <!-- Add ingredient button -->
           <div v-if="!showAddIngredient">
             <button
               type="button"
-              class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-md transition-colors"
+              class="inline-flex items-center gap-1 px-4 py-2 text-sm font-bold text-primary hover:text-primary-dark hover:bg-primary/5 rounded-xl transition-all"
               @click="openAddIngredient"
             >
               <PlusIcon class="h-4 w-4" />
@@ -191,12 +198,13 @@ onMounted(() => {
             </button>
           </div>
 
-          <div v-else class="mt-2 p-4 bg-gray-50 rounded-lg">
+          <!-- Add ingredient form -->
+          <div v-else class="mt-3 p-4 bg-cream rounded-xl border-2 border-soft-black/10">
             <div class="flex items-center justify-between mb-3">
-              <span class="text-sm font-medium text-gray-700">Add new ingredient</span>
+              <span class="text-sm font-bold text-soft-black">Add new ingredient</span>
               <button
                 type="button"
-                class="text-gray-400 hover:text-gray-600"
+                class="text-charcoal hover:text-primary transition-colors"
                 @click="closeAddIngredient"
               >
                 <XMarkIcon class="h-5 w-5" />
@@ -212,26 +220,30 @@ onMounted(() => {
               <button
                 type="button"
                 :disabled="!newIngredientName.trim() || isAddingIngredient"
-                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="btn-primary !py-2 !px-4 text-sm disabled:opacity-50"
                 @click="addIngredient"
               >
                 <span v-if="isAddingIngredient">Adding...</span>
                 <span v-else>Add</span>
               </button>
             </div>
-            <p class="mt-2 text-xs text-gray-500">
+            <p class="mt-2 text-xs text-charcoal">
               Type to search existing ingredients or enter a new one.
             </p>
-            <p v-if="addIngredientError" class="mt-2 text-sm text-red-600">
+            <p v-if="addIngredientError" class="mt-2 text-sm font-bold text-primary">
               {{ addIngredientError }}
             </p>
           </div>
         </div>
 
-        <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
-          <p class="text-sm text-gray-500">
-            Find this recipe on page {{ recipe.pageNumber }} of your cookbook.
-          </p>
+        <!-- Footer section -->
+        <div class="px-6 py-4 bg-cream border-t-3 border-soft-black/10">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-accent rounded-full"></span>
+            <p class="text-sm text-charcoal">
+              Find this recipe on <span class="font-bold text-soft-black">page {{ recipe.pageNumber }}</span> of your cookbook.
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -54,62 +54,76 @@ watch(
 
 <template>
   <div>
-    <div v-if="recipes.length === 0 && !isLoading" class="text-center py-12">
-      <svg
-        class="mx-auto h-12 w-12 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+    <!-- Empty state with artistic styling -->
+    <div v-if="recipes.length === 0 && !isLoading" class="empty-state">
+      <div class="empty-state-icon">
+        <svg
+          class="w-10 h-10 text-charcoal"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
           stroke-width="2"
-          d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">No recipes found</h3>
-      <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filters.</p>
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <p class="text-lg font-bold text-soft-black mb-2">No recipes found</p>
+      <p class="text-charcoal">Try adjusting your search or filters.</p>
     </div>
 
-    <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <!-- Recipe grid -->
+    <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <RecipeCard v-for="recipe in recipes" :key="recipe.id" :recipe="recipe" />
     </div>
 
-    <div v-if="isLoading && recipes.length > 0" class="flex justify-center py-8">
-      <svg
-        class="animate-spin h-8 w-8 text-indigo-600"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
-      </svg>
+    <!-- Loading more indicator -->
+    <div v-if="isLoading && recipes.length > 0" class="flex justify-center py-10">
+      <div class="flex items-center gap-3 px-6 py-3 bg-white rounded-xl border-3 border-soft-black shadow-[4px_4px_0_var(--color-soft-black)]">
+        <svg
+          class="animate-spin h-6 w-6 text-primary"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        <span class="font-bold text-soft-black">Loading more...</span>
+      </div>
     </div>
 
-    <div v-else-if="isLoading && recipes.length === 0" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <!-- Initial loading skeleton -->
+    <div v-else-if="isLoading && recipes.length === 0" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <RecipeCardSkeleton v-for="n in 6" :key="n" />
     </div>
 
+    <!-- End of results -->
     <div
       v-else-if="!hasMore && recipes.length > 0"
-      class="text-center py-6 text-sm text-gray-500"
+      class="text-center py-8"
     >
-      You've reached the end of the results
+      <div class="inline-flex items-center gap-2 px-4 py-2 bg-cream rounded-xl border-2 border-soft-black/20">
+        <span class="w-2 h-2 bg-accent rounded-full"></span>
+        <span class="text-sm font-medium text-charcoal">You've reached the end</span>
+        <span class="w-2 h-2 bg-accent rounded-full"></span>
+      </div>
     </div>
 
+    <!-- Infinite scroll trigger -->
     <div
       ref="scrollTargetRef"
       v-if="hasMore && !isLoading"

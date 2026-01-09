@@ -76,15 +76,20 @@ async function handleConfirmImport() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto px-4 py-8">
-      <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-900">Import Cookbook</h1>
-        <p class="mt-1 text-sm text-gray-600">
+  <div class="min-h-screen">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header with artistic styling -->
+      <div class="page-header mb-8 relative">
+        <h1 class="page-title">Import Cookbook</h1>
+        <p class="mt-2 text-charcoal">
           Add your physical cookbook to the database for easy recipe searching
         </p>
+        <!-- Decorative elements -->
+        <div class="absolute -top-2 right-0 w-8 h-8 bg-secondary rounded-full opacity-60" aria-hidden="true"></div>
+        <div class="absolute top-4 right-12 w-4 h-4 bg-accent" style="transform: rotate(45deg);" aria-hidden="true"></div>
       </div>
 
+      <!-- Step progress indicator -->
       <nav aria-label="Progress" class="mb-8">
         <ol class="flex items-center">
           <li
@@ -99,8 +104,8 @@ async function handleConfirmImport() {
             >
               <div
                 :class="[
-                  'h-0.5 w-full',
-                  getStepStatus(step.id) === 'completed' ? 'bg-indigo-600' : 'bg-gray-200',
+                  'h-1 w-full rounded-full',
+                  getStepStatus(step.id) === 'completed' ? 'bg-accent' : 'bg-soft-black/10',
                 ]"
               ></div>
             </div>
@@ -109,12 +114,12 @@ async function handleConfirmImport() {
               <span class="flex flex-col items-center">
                 <span
                   :class="[
-                    'h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium',
+                    'h-10 w-10 rounded-xl flex items-center justify-center text-sm font-bold border-3 transition-all',
                     getStepStatus(step.id) === 'completed'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-accent border-soft-black text-soft-black shadow-[3px_3px_0_var(--color-soft-black)]'
                       : getStepStatus(step.id) === 'current'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-gray-200 text-gray-500',
+                        ? 'bg-primary border-soft-black text-white shadow-[3px_3px_0_var(--color-soft-black)]'
+                        : 'bg-white border-soft-black/20 text-charcoal',
                   ]"
                 >
                   <svg
@@ -123,51 +128,48 @@ async function handleConfirmImport() {
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    stroke-width="3"
                   >
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      stroke-width="2"
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
                   <span v-else>{{ stepIdx + 1 }}</span>
                 </span>
-                <span class="mt-2 text-xs font-medium text-gray-500">{{ step.name }}</span>
+                <span :class="[
+                  'mt-2 text-xs font-bold',
+                  getStepStatus(step.id) === 'current' ? 'text-soft-black' : 'text-charcoal'
+                ]">{{ step.name }}</span>
               </span>
             </div>
           </li>
         </ol>
       </nav>
 
-      <div v-if="error" class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-        <div class="flex">
-          <svg
-            class="h-5 w-5 text-red-400 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <p class="text-sm text-red-700">{{ error }}</p>
+      <!-- Error message -->
+      <div v-if="error" class="mb-6 card-pop p-5 border-primary bg-primary/5">
+        <div class="flex items-center gap-3">
+          <span class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </span>
+          <p class="text-sm font-bold text-soft-black">{{ error }}</p>
         </div>
       </div>
 
-      <div class="bg-white shadow rounded-lg p-6">
+      <!-- Main content card -->
+      <div class="card-pop p-6">
         <template v-if="currentStep === 'form'">
-          <h2 class="text-lg font-medium text-gray-900 mb-6">Cookbook Details</h2>
+          <h2 class="text-xl font-bold text-soft-black mb-6">Cookbook Details</h2>
           <CookbookForm v-model="formData" :disabled="isLoading" @submit="handleFormSubmit" />
         </template>
 
         <template v-else-if="currentStep === 'upload'">
-          <h2 class="text-lg font-medium text-gray-900 mb-6">Upload Index Pages</h2>
-          <p class="text-sm text-gray-600 mb-6">
+          <h2 class="text-xl font-bold text-soft-black mb-6">Upload Index Pages</h2>
+          <p class="text-charcoal mb-6">
             Upload photos of your cookbook's index pages. The pages will be processed in order.
           </p>
           <ImageUploader
@@ -178,7 +180,7 @@ async function handleConfirmImport() {
         </template>
 
         <template v-else-if="currentStep === 'processing'">
-          <h2 class="text-lg font-medium text-gray-900 mb-6">Processing Index Pages</h2>
+          <h2 class="text-xl font-bold text-soft-black mb-6">Processing Index Pages</h2>
           <OcrProgress
             v-if="cookbookId"
             :cookbook-id="cookbookId"
@@ -188,8 +190,8 @@ async function handleConfirmImport() {
         </template>
 
         <template v-else-if="currentStep === 'review'">
-          <h2 class="text-lg font-medium text-gray-900 mb-6">Review Extracted Recipes</h2>
-          <p class="text-sm text-gray-600 mb-6">
+          <h2 class="text-xl font-bold text-soft-black mb-6">Review Extracted Recipes</h2>
+          <p class="text-charcoal mb-6">
             Review the recipes extracted from your cookbook index. You can edit or skip any entries
             before importing.
           </p>
