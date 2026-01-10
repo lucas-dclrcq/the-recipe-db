@@ -2,15 +2,17 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
-import { ArrowLeftIcon, PhotoIcon, XMarkIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { ArrowLeftIcon, PhotoIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { useCookbook } from '../composables/useCookbook'
 import RecipeCard from '../components/RecipeCard.vue'
+import CoverUploadModal from '../components/CoverUploadModal.vue'
 
 const route = useRoute()
 const router = useRouter()
 const { cookbook, recipes, isLoading, isDeleting, error, deleteError, fetchCookbook: fetchCookbookFromComposable, deleteCookbook, clearErrors } = useCookbook()
 
 const showDeleteDialog = ref(false)
+const showUploadModal = ref(false)
 
 const coverVersion = ref(0)
 const coverUrl = computed(() => {
@@ -18,17 +20,6 @@ const coverUrl = computed(() => {
   return cookbook.value.hasCover
     ? `/api/cookbooks/${cookbook.value.id}/cover?v=${coverVersion.value}`
     : '/default-cover.svg'
-})
-
-const uploadError = ref<string | null>(null)
-const isUploading = ref(false)
-const fileInput = ref<HTMLInputElement | null>(null)
-const selectedFile = ref<File | null>(null)
-const isDragging = ref(false)
-
-const previewUrl = computed(() => {
-  if (!selectedFile.value) return null
-  return URL.createObjectURL(selectedFile.value)
 })
 
 const ocrStatusCardClass = computed(() => {
@@ -76,85 +67,18 @@ const ocrStatusText = computed(() => {
   }
 })
 
-function onFileChange(e: Event) {
-  const t = e.target as HTMLInputElement
-  const file = t.files && t.files.length > 0 ? t.files[0] : null
-  if (file && isValidFile(file)) {
-    selectedFile.value = file
-    uploadError.value = null
-  }
+function openUploadModal() {
+  showUploadModal.value = true
 }
 
-function isValidFile(file: File): boolean {
-  const validTypes = ['image/jpeg', 'image/png']
-  if (!validTypes.includes(file.type)) {
-    uploadError.value = 'Please select a JPEG or PNG image'
-    return false
-  }
-  return true
+function closeUploadModal() {
+  showUploadModal.value = false
 }
 
-function handleDragOver(e: DragEvent) {
-  e.preventDefault()
-  isDragging.value = true
-}
-
-function handleDragLeave() {
-  isDragging.value = false
-}
-
-function handleDrop(e: DragEvent) {
-  e.preventDefault()
-  isDragging.value = false
-  if (isUploading.value) return
-
-  const file = e.dataTransfer?.files?.[0]
-  if (file && isValidFile(file)) {
-    selectedFile.value = file
-    uploadError.value = null
-  }
-}
-
-function openFilePicker() {
-  if (!isUploading.value) {
-    fileInput.value?.click()
-  }
-}
-
-function clearSelection() {
-  selectedFile.value = null
-  uploadError.value = null
-  if (fileInput.value) fileInput.value.value = ''
-}
-
-async function uploadCover() {
-  uploadError.value = null
-  if (!cookbook.value) return
-  if (!selectedFile.value) {
-    uploadError.value = 'Please choose an image file (JPEG or PNG)'
-    return
-  }
-  const form = new FormData()
-  form.append('file', selectedFile.value)
-  isUploading.value = true
-  try {
-    const res = await fetch(`/api/cookbooks/${cookbook.value.id}/cover`, {
-      method: 'POST',
-      body: form,
-    })
-    if (!res.ok) {
-      const txt = await res.text()
-      throw new Error(txt || `Upload failed (${res.status})`)
-    }
-    // success: ensure UI updates
+function handleCoverUploaded() {
+  if (cookbook.value) {
     cookbook.value.hasCover = true
     coverVersion.value++
-    // clear selection
-    clearSelection()
-  } catch (e) {
-    uploadError.value = e instanceof Error ? e.message : 'Upload failed'
-  } finally {
-    isUploading.value = false
   }
 }
 
@@ -260,8 +184,16 @@ onMounted(() => {
                 </RouterLink>
               </div>
 
-              <!-- Delete button -->
-              <div class="mt-5">
+              <!-- Action buttons -->
+              <div class="mt-5 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-soft-black bg-white border-3 border-soft-black rounded-xl hover:bg-cream transition-colors"
+                  @click="openUploadModal"
+                >
+                  <PhotoIcon class="h-4 w-4" />
+                  Upload Cover
+                </button>
                 <button
                   type="button"
                   class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-primary bg-white border-3 border-primary rounded-xl hover:bg-primary/5 transition-colors"
@@ -313,83 +245,6 @@ onMounted(() => {
                 </div>
               </div>
 
-              <!-- Cover upload section -->
-              <div class="mt-6">
-                <label class="block text-sm font-bold text-soft-black mb-3">Upload new cover</label>
-                <input
-                  ref="fileInput"
-                  type="file"
-                  accept="image/jpeg,image/png"
-                  class="hidden"
-                  @change="onFileChange"
-                />
-
-                <!-- Drop zone / file picker -->
-                <div
-                  v-if="!selectedFile"
-                  @dragover="handleDragOver"
-                  @dragleave="handleDragLeave"
-                  @drop="handleDrop"
-                  @click="openFilePicker"
-                  :class="[
-                    'border-3 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all',
-                    isDragging ? 'border-primary bg-primary/5' : 'border-soft-black/30 hover:border-soft-black hover:bg-cream',
-                  ]"
-                >
-                  <PhotoIcon class="mx-auto h-10 w-10 text-charcoal" />
-                  <p class="mt-2 text-sm text-charcoal">
-                    <span class="font-bold text-primary">Click to upload</span>
-                    or drag and drop
-                  </p>
-                  <p class="mt-1 text-xs text-charcoal">JPEG or PNG</p>
-                </div>
-
-                <!-- Preview selected file -->
-                <div v-else class="space-y-4">
-                  <div class="relative inline-block">
-                    <div class="w-32 aspect-[3/4] rounded-xl overflow-hidden bg-cream border-3 border-soft-black shadow-[3px_3px_0_var(--color-soft-black)]">
-                      <img :src="previewUrl!" alt="Preview" class="w-full h-full object-cover" />
-                    </div>
-                    <button
-                      type="button"
-                      @click="clearSelection"
-                      class="absolute -top-2 -right-2 bg-soft-black hover:bg-charcoal text-white p-1.5 rounded-lg shadow-sm transition-colors"
-                      :disabled="isUploading"
-                    >
-                      <XMarkIcon class="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <button
-                      type="button"
-                      class="btn-primary !py-2 !px-4 text-sm"
-                      :disabled="isUploading"
-                      @click="uploadCover"
-                    >
-                      <svg
-                        v-if="isUploading"
-                        class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      {{ isUploading ? 'Uploading...' : 'Upload Cover' }}
-                    </button>
-                    <button
-                      type="button"
-                      class="btn-secondary !py-2 !px-4 text-sm"
-                      :disabled="isUploading"
-                      @click="clearSelection"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-
-                <p v-if="uploadError" class="mt-3 text-sm font-bold text-primary">{{ uploadError }}</p>
-              </div>
             </div>
           </div>
         </div>
@@ -458,5 +313,14 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <!-- Cover Upload Modal -->
+    <CoverUploadModal
+      v-if="cookbook"
+      :cookbook-id="cookbook.id"
+      :is-open="showUploadModal"
+      @close="closeUploadModal"
+      @uploaded="handleCoverUploaded"
+    />
   </div>
 </template>
