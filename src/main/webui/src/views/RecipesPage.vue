@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import PageSearchBar from '../components/PageSearchBar.vue'
 import RecipeList from '../components/RecipeList.vue'
 import IngredientAutocomplete from '../components/IngredientAutocomplete.vue'
@@ -8,6 +9,8 @@ import ActiveFilters from '../components/ActiveFilters.vue'
 import { useRecipeSearch } from '../composables/useRecipeSearch'
 import { useCookbooks } from '../composables/useCookbooks'
 import type { Ingredient } from '../types/recipe'
+
+const { t } = useI18n()
 
 const showFilters = ref(false)
 
@@ -82,7 +85,7 @@ onMounted(() => {
   <div>
     <div class="max-w-6xl mx-auto">
       <div class="page-header mb-8 relative">
-        <h1 class="page-title">Recipes</h1>
+        <h1 class="page-title">{{ t('recipes.title') }}</h1>
         <div class="absolute -top-2 right-0 w-8 h-8 bg-secondary rounded-full opacity-60" aria-hidden="true"></div>
         <div class="absolute top-4 right-12 w-4 h-4 bg-accent" style="transform: rotate(45deg);" aria-hidden="true"></div>
       </div>
@@ -90,7 +93,7 @@ onMounted(() => {
       <div class="mb-8 space-y-4">
         <PageSearchBar
           v-model="query"
-          placeholder="Search recipes..."
+          :placeholder="t('recipes.searchPlaceholder')"
           :show-filters-button="true"
           :filters-expanded="showFilters"
           @search="handleSearch"
@@ -101,7 +104,7 @@ onMounted(() => {
           <div class="grid gap-5 sm:grid-cols-2">
             <div>
               <label class="block text-sm font-bold text-soft-black mb-2">
-                Ingredient
+                {{ t('filters.ingredient') }}
               </label>
               <IngredientAutocomplete
                 v-model="ingredientFilter"
@@ -110,7 +113,7 @@ onMounted(() => {
             </div>
             <div>
               <label class="block text-sm font-bold text-soft-black mb-2">
-                Cookbook
+                {{ t('filters.cookbook') }}
               </label>
               <CookbookSelector
                 v-model="cookbookFilter"
@@ -133,7 +136,7 @@ onMounted(() => {
                   </span>
                 </span>
                 <span class="text-sm font-bold text-soft-black group-hover:text-primary transition-colors">
-                  Ingredients available now
+                  {{ t('filters.ingredientsAvailableNow') }}
                 </span>
               </label>
             </div>
@@ -144,7 +147,7 @@ onMounted(() => {
               class="btn-secondary !py-2 !px-4 text-sm"
               @click="handleClearFilters"
             >
-              Clear All
+              {{ t('common.clearAll') }}
             </button>
           </div>
         </div>
@@ -173,7 +176,7 @@ onMounted(() => {
             class="btn-primary !py-2 !px-4 text-sm flex-shrink-0"
             @click="searchRecipes()"
           >
-            Retry
+            {{ t('common.retry') }}
           </button>
         </div>
       </div>

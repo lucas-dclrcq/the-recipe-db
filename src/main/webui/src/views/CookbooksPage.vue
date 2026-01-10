@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import CookbookCard from '../components/CookbookCard.vue'
 import PageSearchBar from '../components/PageSearchBar.vue'
 import { useCookbooks } from '../composables/useCookbooks'
+
+const { t } = useI18n()
 
 const query = ref('')
 const { cookbooks, isLoading, error, searchCookbooks, fetchCookbooks } = useCookbooks()
@@ -28,7 +31,7 @@ onMounted(() => {
     <div class="max-w-6xl mx-auto">
       <!-- Header with artistic styling -->
       <div class="page-header mb-8 relative">
-        <h1 class="page-title">Cookbooks</h1>
+        <h1 class="page-title">{{ t('cookbooks.title') }}</h1>
         <!-- Decorative elements -->
         <div class="absolute -top-2 right-0 w-8 h-8 bg-electric-blue rounded-full opacity-60" aria-hidden="true"></div>
         <div class="absolute top-4 right-12 w-4 h-4 bg-secondary" style="transform: rotate(45deg);" aria-hidden="true"></div>
@@ -38,7 +41,7 @@ onMounted(() => {
       <div class="mb-8 space-y-4">
         <PageSearchBar
           v-model="query"
-          placeholder="Search cookbooks by title or author..."
+          :placeholder="t('cookbooks.searchPlaceholder')"
           @search="handleSearch"
         />
 
@@ -57,7 +60,7 @@ onMounted(() => {
             class="btn-primary !py-2 !px-4 text-sm flex-shrink-0"
             @click="fetchCookbooks()"
           >
-            Retry
+            {{ t('common.retry') }}
           </button>
         </div>
       </div>
@@ -83,8 +86,8 @@ onMounted(() => {
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
-          <p class="text-lg font-bold text-soft-black mb-2">No cookbooks found</p>
-          <p class="text-charcoal">Try adjusting your search or import a new cookbook.</p>
+          <p class="text-lg font-bold text-soft-black mb-2">{{ t('cookbooks.noCookbooksFound') }}</p>
+          <p class="text-charcoal">{{ t('cookbooks.noCookbooksHint') }}</p>
         </div>
         <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 pb-2 pr-2">
           <CookbookCard v-for="c in cookbooks" :key="c.id" :cookbook="c" />

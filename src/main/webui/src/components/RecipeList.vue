@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import RecipeCard from './RecipeCard.vue'
 import RecipeCardSkeleton from './RecipeCardSkeleton.vue'
 import { useInfiniteScroll } from '../composables/useInfiniteScroll'
 import type { Recipe } from '../types/recipe'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   recipes: Recipe[]
@@ -71,8 +74,8 @@ watch(
           />
         </svg>
       </div>
-      <p class="text-lg font-bold text-soft-black mb-2">No recipes found</p>
-      <p class="text-charcoal">Try adjusting your search or filters.</p>
+      <p class="text-lg font-bold text-soft-black mb-2">{{ t('recipes.noRecipesFound') }}</p>
+      <p class="text-charcoal">{{ t('recipes.noRecipesHint') }}</p>
     </div>
 
     <!-- Recipe grid -->
@@ -102,7 +105,7 @@ watch(
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           ></path>
         </svg>
-        <span class="font-bold text-soft-black">Loading more...</span>
+        <span class="font-bold text-soft-black">{{ t('common.loadingMore') }}</span>
       </div>
     </div>
 
@@ -118,7 +121,7 @@ watch(
     >
       <div class="inline-flex items-center gap-2 px-4 py-2 bg-cream rounded-xl border-2 border-soft-black/20">
         <span class="w-2 h-2 bg-accent rounded-full"></span>
-        <span class="text-sm font-medium text-charcoal">You've reached the end</span>
+        <span class="text-sm font-medium text-charcoal">{{ t('recipes.endOfList') }}</span>
         <span class="w-2 h-2 bg-accent rounded-full"></span>
       </div>
     </div>

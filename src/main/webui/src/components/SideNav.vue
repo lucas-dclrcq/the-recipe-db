@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { mdiFood, mdiCarrot, mdiBookOpenVariant } from '@mdi/js'
+import LanguageSwitcher from './LanguageSwitcher.vue'
 
 defineProps<{
   hideLogo?: boolean
 }>()
 
+const { t } = useI18n()
 const route = useRoute()
 
 const isActive = (path: string) => {
@@ -17,9 +20,9 @@ const isActive = (path: string) => {
 }
 
 const navItems = computed(() => [
-  { label: 'Recipes', to: '/recipes', exact: true, icon: mdiFood, color: 'bg-primary' },
-  { label: 'Ingredients', to: '/ingredients', icon: mdiCarrot, color: 'bg-accent' },
-  { label: 'Cookbooks', to: '/cookbooks', icon: mdiBookOpenVariant, color: 'bg-electric-blue' },
+  { labelKey: 'nav.recipes', to: '/recipes', exact: true, icon: mdiFood, color: 'bg-primary' },
+  { labelKey: 'nav.ingredients', to: '/ingredients', icon: mdiCarrot, color: 'bg-accent' },
+  { labelKey: 'nav.cookbooks', to: '/cookbooks', icon: mdiBookOpenVariant, color: 'bg-electric-blue' },
 ])
 </script>
 
@@ -31,7 +34,7 @@ const navItems = computed(() => [
       <div class="absolute top-0 right-0 w-12 h-12 bg-secondary" style="clip-path: polygon(100% 0, 0 0, 100% 100%);" aria-hidden="true"></div>
 
       <RouterLink to="/" class="block relative logo-artistic text-xl">
-        The Recipe DB
+        {{ t('app.title') }}
       </RouterLink>
 
       <!-- Small decorative circle -->
@@ -59,7 +62,7 @@ const navItems = computed(() => [
               <path :d="item.icon" />
             </svg>
           </span>
-          <span class="tracking-tight">{{ item.label }}</span>
+          <span class="tracking-tight">{{ t(item.labelKey) }}</span>
 
           <!-- Active indicator dot -->
           <span
@@ -87,8 +90,13 @@ const navItems = computed(() => [
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
-        <span class="relative font-black tracking-wide">Import New Cookbook</span>
+        <span class="relative font-black tracking-wide">{{ t('nav.importCookbook') }}</span>
       </RouterLink>
+    </div>
+
+    <!-- Language Switcher -->
+    <div class="p-4 border-t-4 border-soft-black">
+      <LanguageSwitcher />
     </div>
 
     <!-- Decorative bottom wave -->

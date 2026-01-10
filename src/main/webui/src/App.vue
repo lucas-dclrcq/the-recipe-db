@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { RouterView, RouterLink, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import SideNav from './components/SideNav.vue'
 
+const { t } = useI18n()
 const isMobileNavOpen = ref(false)
 const route = useRoute()
 
@@ -34,14 +36,14 @@ watch(
       <button
         type="button"
         class="p-2 rounded-xl border-3 border-soft-black bg-white hover:bg-cream transition-colors shadow-[3px_3px_0_var(--color-soft-black)]"
-        aria-label="Open navigation"
+        :aria-label="t('nav.openNavigation')"
         @click="isMobileNavOpen = true"
       >
         <svg class="h-5 w-5 text-soft-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <RouterLink to="/" class="logo-artistic">The Recipe DB</RouterLink>
+      <RouterLink to="/" class="logo-artistic">{{ t('app.title') }}</RouterLink>
       <span class="w-10" aria-hidden="true"></span>
     </div>
 
@@ -61,11 +63,11 @@ watch(
       :class="isMobileNavOpen ? 'translate-x-0' : '-translate-x-full'"
     >
       <div class="h-16 flex-shrink-0 flex items-center justify-between px-5 border-b-4 border-soft-black bg-secondary">
-        <span class="font-black text-soft-black text-lg tracking-tight">Menu</span>
+        <span class="font-black text-soft-black text-lg tracking-tight">{{ t('app.menu') }}</span>
         <button
           type="button"
           class="p-2 rounded-xl border-3 border-soft-black bg-white hover:bg-cream transition-colors shadow-[3px_3px_0_var(--color-soft-black)]"
-          aria-label="Close navigation"
+          :aria-label="t('nav.closeNavigation')"
           @click="isMobileNavOpen = false"
         >
           <svg class="h-5 w-5 text-soft-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">

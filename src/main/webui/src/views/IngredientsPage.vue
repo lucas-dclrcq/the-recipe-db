@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue'
+import {useI18n} from 'vue-i18n'
 import IngredientCard from '../components/IngredientCard.vue'
 import MergeIngredientsDialog from '../components/MergeIngredientsDialog.vue'
 import PageSearchBar from '../components/PageSearchBar.vue'
 import {useIngredients} from '../composables/useIngredients'
 import {useInfiniteScroll} from '../composables/useInfiniteScroll'
 import type {IngredientFilters} from '../types/ingredient'
+
+const {t} = useI18n()
 
 const query = ref('')
 const minRecipeCount = ref<number | undefined>(undefined)
@@ -112,7 +115,7 @@ onMounted(() => {
     <div class="max-w-6xl mx-auto">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div class="page-header !mb-0 relative">
-          <h1 class="page-title">Ingredients</h1>
+          <h1 class="page-title">{{ t('ingredients.title') }}</h1>
         </div>
         <div class="flex gap-3 flex-shrink-0">
           <button
@@ -121,7 +124,7 @@ onMounted(() => {
             class="btn-primary text-sm"
             @click="openMergeDialog"
           >
-            Merge ({{ selectedCount }})
+            {{ t('ingredients.merge', { count: selectedCount }) }}
           </button>
           <button
             v-else-if="selectedCount > 0"
@@ -129,7 +132,7 @@ onMounted(() => {
             class="btn-secondary text-sm opacity-50 cursor-not-allowed"
             disabled
           >
-            Select 2+ to merge
+            {{ t('ingredients.selectToMerge') }}
           </button>
         </div>
       </div>
@@ -138,7 +141,7 @@ onMounted(() => {
       <div class="mb-8 space-y-4">
         <PageSearchBar
           v-model="query"
-          placeholder="Search ingredients..."
+          :placeholder="t('ingredients.searchPlaceholder')"
           :show-filters-button="true"
           :filters-expanded="showFilters"
           @search="handleSearch"
@@ -150,27 +153,27 @@ onMounted(() => {
           <div class="grid gap-5 sm:grid-cols-2">
             <div>
               <label class="block text-sm font-bold text-soft-black mb-2">
-                Minimum recipes
+                {{ t('filters.minimumRecipes') }}
               </label>
               <input
                 v-model.number="minRecipeCount"
                 type="number"
                 min="0"
-                placeholder="Any"
+                :placeholder="t('filters.any')"
                 class="input-field w-full"
               />
             </div>
             <div>
               <label class="block text-sm font-bold text-soft-black mb-2">
-                Has aliases
+                {{ t('filters.hasAliases') }}
               </label>
               <select
                 v-model="hasDisambiguations"
                 class="input-field w-full"
               >
-                <option value="all">All</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
+                <option value="all">{{ t('filters.all') }}</option>
+                <option value="yes">{{ t('filters.yes') }}</option>
+                <option value="no">{{ t('filters.no') }}</option>
               </select>
             </div>
             <div class="sm:col-span-2">
@@ -188,7 +191,7 @@ onMounted(() => {
                   </span>
                 </span>
                 <span class="text-sm font-bold text-soft-black group-hover:text-primary transition-colors">
-                  Ingredient available now
+                  {{ t('filters.ingredientAvailableNow') }}
                 </span>
               </label>
             </div>
@@ -199,14 +202,14 @@ onMounted(() => {
               class="btn-secondary !py-2 !px-4 text-sm"
               @click="clearFilters"
             >
-              Clear
+              {{ t('common.clear') }}
             </button>
             <button
               type="button"
               class="btn-primary !py-2 !px-4 text-sm"
               @click="applyFilters"
             >
-              Apply
+              {{ t('common.apply') }}
             </button>
           </div>
         </div>
@@ -226,7 +229,7 @@ onMounted(() => {
             class="btn-primary !py-2 !px-4 text-sm flex-shrink-0"
             @click="() => fetchIngredients()"
           >
-            Retry
+            {{ t('common.retry') }}
           </button>
         </div>
       </div>
@@ -248,8 +251,8 @@ onMounted(() => {
               <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
             </svg>
           </div>
-          <p class="text-lg font-bold text-soft-black mb-2">No ingredients found</p>
-          <p class="text-charcoal">Try adjusting your search or filters.</p>
+          <p class="text-lg font-bold text-soft-black mb-2">{{ t('ingredients.noIngredientsFound') }}</p>
+          <p class="text-charcoal">{{ t('ingredients.noIngredientsHint') }}</p>
         </div>
         <div v-else>
           <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-2 pr-2">
@@ -272,11 +275,11 @@ onMounted(() => {
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span class="font-bold text-soft-black">Loading more...</span>
+              <span class="font-bold text-soft-black">{{ t('common.loadingMore') }}</span>
             </div>
             <div v-else-if="!hasMore && ingredients.length > 0" class="inline-flex items-center gap-2 px-4 py-2 bg-cream rounded-xl border-2 border-soft-black/20">
               <span class="w-2 h-2 bg-accent rounded-full"></span>
-              <span class="text-sm font-medium text-charcoal">End of list</span>
+              <span class="text-sm font-medium text-charcoal">{{ t('ingredients.endOfList') }}</span>
               <span class="w-2 h-2 bg-accent rounded-full"></span>
             </div>
           </div>

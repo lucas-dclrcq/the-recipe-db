@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import type { Cookbook } from '../types/cookbook'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   cookbook: Cookbook
@@ -10,13 +13,13 @@ const props = defineProps<{
 const ocrBadge = computed(() => {
   switch (props.cookbook.ocrStatus) {
     case 'PROCESSING':
-      return { text: 'Processing...', class: 'badge-status-processing' }
+      return { text: t('ocr.processingStatus'), class: 'badge-status-processing' }
     case 'COMPLETED':
-      return { text: 'Ready', class: 'badge-status-success' }
+      return { text: t('ocr.readyStatus'), class: 'badge-status-success' }
     case 'COMPLETED_WITH_ERRORS':
-      return { text: 'Partial', class: 'badge-status-warning' }
+      return { text: t('ocr.partialStatus'), class: 'badge-status-warning' }
     case 'FAILED':
-      return { text: 'Failed', class: 'badge-status-error' }
+      return { text: t('ocr.failedStatus'), class: 'badge-status-error' }
     default:
       return null
   }
@@ -74,11 +77,11 @@ const ocrBadge = computed(() => {
         {{ cookbook.title }}
       </h3>
       <p class="text-sm text-charcoal mt-1.5 line-clamp-1 font-medium" v-if="cookbook.author">
-        by {{ cookbook.author }}
+        {{ t('common.by', { author: cookbook.author }) }}
       </p>
       <div class="mt-3 flex items-center gap-2">
         <span class="inline-flex items-center px-2.5 py-1 text-xs font-bold text-soft-black bg-cream rounded-lg border-2 border-soft-black">
-          {{ cookbook.recipeCount }} recipe{{ cookbook.recipeCount === 1 ? '' : 's' }}
+          {{ t('common.nRecipes', cookbook.recipeCount) }}
         </span>
       </div>
     </div>
