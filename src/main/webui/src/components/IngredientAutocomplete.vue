@@ -2,7 +2,9 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useIngredientAutocomplete } from '../composables/useIngredientAutocomplete'
 import type { Ingredient } from '../types/recipe'
+import {useI18n} from "vue-i18n";
 
+const { t } = useI18n()
 const props = defineProps<{
   modelValue: string
 }>()
@@ -146,7 +148,7 @@ onUnmounted(() => {
       v-if="isOpen && query.length >= 2 && suggestions.length === 0 && !isLoading"
       class="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-2 px-3 text-sm text-gray-500 ring-1 ring-black ring-opacity-5"
     >
-      No ingredients found
+      {{t('ingredients.noIngredientsFound')}}
     </div>
   </div>
 </template>

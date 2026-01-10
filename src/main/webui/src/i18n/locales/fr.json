@@ -1,11 +1,11 @@
 {
   "app": {
-    "title": "La Base de Recettes",
+    "title": "The Recipe DB",
     "menu": "Menu"
   },
   "nav": {
     "recipes": "Recettes",
-    "ingredients": "Ingredients",
+    "ingredients": "Ingrédients",
     "cookbooks": "Livres de cuisine",
     "importCookbook": "Importer un livre",
     "openNavigation": "Ouvrir la navigation",
@@ -43,6 +43,7 @@
   },
   "recipes": {
     "title": "Recettes",
+    "badge": "recette",
     "searchPlaceholder": "Rechercher des recettes...",
     "noRecipesFound": "Aucune recette trouvee",
     "noRecipesHint": "Essayez d'ajuster votre recherche ou vos filtres.",
@@ -55,9 +56,9 @@
     "findOnPage": "Retrouvez cette recette a la page {page} de votre livre de cuisine."
   },
   "ingredients": {
-    "title": "Ingredients",
+    "title": "Ingrédients",
     "searchPlaceholder": "Rechercher des ingredients...",
-    "noIngredientsFound": "Aucun ingredient trouve",
+    "noIngredientsFound": "Aucun ingredient trouvé",
     "noIngredientsHint": "Essayez d'ajuster votre recherche ou vos filtres.",
     "endOfList": "Fin de la liste",
     "merge": "Fusionner ({count})",
@@ -97,8 +98,9 @@
   "filters": {
     "ingredient": "Ingredient",
     "cookbook": "Livre de cuisine",
-    "ingredientsAvailableNow": "Ingredients disponibles maintenant",
-    "ingredientAvailableNow": "Ingredient disponible maintenant",
+    "allCookbooks": "Tous les livres",
+    "ingredientsAvailableNow": "Ingrédients de saison seulement",
+    "ingredientAvailableNow": "Ingrédient de saison seulement",
     "minimumRecipes": "Minimum de recettes",
     "hasAliases": "A des alias",
     "any": "Tous",
@@ -108,8 +110,8 @@
   },
   "import": {
     "title": "Importer un livre de cuisine",
-    "subtitle": "Ajoutez votre livre de cuisine physique a la base de donnees pour faciliter la recherche de recettes",
-    "stepDetails": "Details",
+    "subtitle": "Ajoutez votre livre de cuisine physique a la base de données pour faciliter la recherche de recettes",
+    "stepDetails": "Détails",
     "stepDetailsDesc": "Entrer les infos",
     "stepUpload": "Telecharger",
     "stepUploadDesc": "Ajouter les pages",
@@ -117,7 +119,7 @@
     "stepProcessDesc": "Extraction OCR",
     "stepReview": "Revision",
     "stepReviewDesc": "Confirmer les recettes",
-    "cookbookDetails": "Details du livre",
+    "cookbookDetails": "Détails du livre",
     "cookbookTitle": "Titre du livre",
     "cookbookTitlePlaceholder": "ex. La cuisine de reference",
     "author": "Auteur",
@@ -126,13 +128,13 @@
     "uploadInstructions": "Telechargez des photos des pages d'index de votre livre. Les pages seront traitees dans l'ordre.",
     "processingIndexPages": "Traitement des pages d'index",
     "reviewExtractedRecipes": "Reviser les recettes extraites",
-    "reviewInstructions": "Revisez les recettes extraites de l'index de votre livre. Vous pouvez modifier ou ignorer des entrees avant l'importation.",
+    "reviewInstructions": "Revisez les recettes extraites de l'index de votre livre. Vous pouvez modifier ou ignorer des entrées avant l'importation.",
     "clickToUpload": "Cliquez pour telecharger",
     "orDragDrop": "ou glissez-deposez",
     "imageTypesOnly": "Images PNG ou JPEG uniquement",
-    "uploadedPages": "Pages telechargees ({count})",
+    "uploadedPages": "Pages téléchargées ({count})",
     "startOcrProcessing": "Demarrer le traitement OCR",
-    "success": "Livre de cuisine importe avec succes !",
+    "success": "Livre de cuisine importe avec succés !",
     "importAnother": "Importer un autre",
     "goToHome": "Aller a l'accueil"
   },

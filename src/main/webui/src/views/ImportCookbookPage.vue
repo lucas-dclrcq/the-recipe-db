@@ -7,7 +7,9 @@ import OcrProgress from '../components/OcrProgress.vue'
 import RecipeReviewList from '../components/RecipeReviewList.vue'
 import type { OcrResultDto } from '../types/ocr'
 import type { ReviewableRecipe } from '../composables/useImportWizard'
+import {useI18n} from "vue-i18n";
 
+const { t } = useI18n()
 const router = useRouter()
 
 const {
@@ -80,9 +82,9 @@ async function handleConfirmImport() {
     <div class="max-w-4xl mx-auto">
       <!-- Header with artistic styling -->
       <div class="page-header mb-8 relative">
-        <h1 class="page-title">Import Cookbook</h1>
+        <h1 class="page-title">{{t('import.title')}}</h1>
         <p class="mt-2 text-charcoal">
-          Add your physical cookbook to the database for easy recipe searching
+          {{t('import.subtitle')}}
         </p>
         <!-- Decorative elements -->
         <div class="absolute -top-2 right-0 w-8 h-8 bg-secondary rounded-full opacity-60" aria-hidden="true"></div>
@@ -163,7 +165,7 @@ async function handleConfirmImport() {
       <!-- Main content card -->
       <div class="card-pop p-6">
         <template v-if="currentStep === 'form'">
-          <h2 class="text-xl font-bold text-soft-black mb-6">Cookbook Details</h2>
+          <h2 class="text-xl font-bold text-soft-black mb-6">{{t('import.cookbookDetails')}}</h2>
           <CookbookForm v-model="formData" :disabled="isLoading" @submit="handleFormSubmit" />
         </template>
 

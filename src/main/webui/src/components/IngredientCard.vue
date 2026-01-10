@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import type { Ingredient } from '../types/ingredient'
+import {useI18n} from "vue-i18n";
+
+const { t } = useI18n()
 
 const props = defineProps<{
   ingredient: Ingredient
@@ -78,7 +81,7 @@ function handleCheckboxKeydown(e: KeyboardEvent) {
 
       <div class="mt-4 flex items-center gap-2">
         <span class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-soft-black bg-cream rounded-lg border-2 border-soft-black">
-          {{ ingredient.recipeCount }} recipe{{ ingredient.recipeCount === 1 ? '' : 's' }}
+          {{ ingredient.recipeCount }} {{ t('recipes.badge')}}{{ ingredient.recipeCount === 1 ? '' : 's' }}
         </span>
       </div>
     </RouterLink>

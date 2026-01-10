@@ -43,6 +43,7 @@
   },
   "recipes": {
     "title": "Recipes",
+    "badge": "recipe",
     "searchPlaceholder": "Search recipes...",
     "noRecipesFound": "No recipes found",
     "noRecipesHint": "Try adjusting your search or filters.",
@@ -97,6 +98,7 @@
   "filters": {
     "ingredient": "Ingredient",
     "cookbook": "Cookbook",
+    "allCookbooks": "All cookbooks",
     "ingredientsAvailableNow": "Ingredients available now",
     "ingredientAvailableNow": "Ingredient available now",
     "minimumRecipes": "Minimum recipes",

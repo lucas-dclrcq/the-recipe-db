@@ -74,8 +74,12 @@ const navItems = computed(() => [
       </li>
     </ul>
 
+    <div class="flex justify-end px-4 pb-3">
+      <LanguageSwitcher />
+    </div>
+    
     <!-- Import button section - pinned to bottom -->
-    <div class="mt-auto p-4 border-t-4 border-soft-black relative">
+    <div class="p-4 border-t-4 border-soft-black relative">
       <!-- Decorative dots pattern -->
       <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(circle, #1A1A2E 1px, transparent 1px); background-size: 8px 8px;" aria-hidden="true"></div>
 
@@ -92,11 +96,6 @@ const navItems = computed(() => [
         </svg>
         <span class="relative font-black tracking-wide">{{ t('nav.importCookbook') }}</span>
       </RouterLink>
-    </div>
-
-    <!-- Language Switcher -->
-    <div class="p-4 border-t-4 border-soft-black">
-      <LanguageSwitcher />
     </div>
 
     <!-- Decorative bottom wave -->
