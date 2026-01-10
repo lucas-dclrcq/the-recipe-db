@@ -29,7 +29,6 @@ function handleCheckboxKeydown(e: KeyboardEvent) {
     class="card-pop relative overflow-hidden group"
     :class="selected ? 'ring-4 ring-primary ring-offset-2' : ''"
   >
-    <!-- Selection checkbox -->
     <div class="absolute top-4 left-4 z-10">
       <label class="relative flex items-center justify-center w-6 h-6 cursor-pointer">
         <input
@@ -57,7 +56,6 @@ function handleCheckboxKeydown(e: KeyboardEvent) {
       </label>
     </div>
 
-    <!-- Decorative corner -->
     <div class="absolute top-0 right-0 w-10 h-10 bg-accent" style="clip-path: polygon(100% 0, 0 0, 100% 100%);" aria-hidden="true"></div>
 
     <RouterLink
@@ -85,7 +83,6 @@ function handleCheckboxKeydown(e: KeyboardEvent) {
       </div>
     </RouterLink>
 
-    <!-- Bottom accent line -->
     <div class="h-1 bg-gradient-to-r from-accent to-secondary" aria-hidden="true"></div>
   </div>
 </template>

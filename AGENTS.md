@@ -42,11 +42,8 @@
 
 This starts:
 
-- Backend at `http://localhost:8080`
-- Frontend dev server at `http://localhost:3000` (proxied through Quarkus)
-- Swagger UI at `http://localhost:8080/q/swagger-ui`
-- Dev UI at `http://localhost:8080/q/dev`
-- PostgreSQL via Quarkus Dev Services (auto-started Docker container)
+- Backend at `http://localhost:8081`
+- Frontend dev server at `http://localhost:3001` (proxied through Quarkus)
 
 ### Run Tests
 
