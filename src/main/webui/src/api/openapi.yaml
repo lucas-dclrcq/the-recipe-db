@@ -507,6 +507,28 @@ paths:
       summary: Add Ingredient
       tags:
       - Recipe Resource
+  /api/recipes/{id}/ingredients/{ingredientName}:
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - name: ingredientName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Remove Ingredient
+      tags:
+      - Recipe Resource
 info:
   title: the-recipe-db API
   version: 1.0-SNAPSHOT

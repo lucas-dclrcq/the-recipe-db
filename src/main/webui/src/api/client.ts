@@ -1006,3 +1006,47 @@ export const postApiRecipesIdIngredients = async (id: Uuid,
   const data: postApiRecipesIdIngredientsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as postApiRecipesIdIngredientsResponse
 }
+
+
+
+/**
+ * @summary Remove Ingredient
+ */
+export type deleteApiRecipesIdIngredientsIngredientNameResponse200 = {
+  data: unknown
+  status: 200
+}
+    
+export type deleteApiRecipesIdIngredientsIngredientNameResponseSuccess = (deleteApiRecipesIdIngredientsIngredientNameResponse200) & {
+  headers: Headers;
+};
+;
+
+export type deleteApiRecipesIdIngredientsIngredientNameResponse = (deleteApiRecipesIdIngredientsIngredientNameResponseSuccess)
+
+export const getDeleteApiRecipesIdIngredientsIngredientNameUrl = (id: Uuid,
+    ingredientName: string,) => {
+
+
+  
+
+  return `/api/recipes/${id}/ingredients/${ingredientName}`
+}
+
+export const deleteApiRecipesIdIngredientsIngredientName = async (id: Uuid,
+    ingredientName: string, options?: RequestInit): Promise<deleteApiRecipesIdIngredientsIngredientNameResponse> => {
+  
+  const res = await fetch(getDeleteApiRecipesIdIngredientsIngredientNameUrl(id,ingredientName),
+  {      
+    ...options,
+    method: 'DELETE'
+    
+    
+  }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  
+  const data: deleteApiRecipesIdIngredientsIngredientNameResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as deleteApiRecipesIdIngredientsIngredientNameResponse
+}

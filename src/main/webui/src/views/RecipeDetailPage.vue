@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { ArrowLeftIcon, BookOpenIcon, PlusIcon, XMarkIcon } from '@heroicons/vue/24/outline'
-import { getApiRecipesId, postApiRecipesIdIngredients } from '../api/client'
+import { getApiRecipesId, postApiRecipesIdIngredients, deleteApiRecipesIdIngredientsIngredientName } from '../api/client'
 import type { Recipe, Ingredient } from '../types/recipe'
 import IngredientAutocomplete from '../components/IngredientAutocomplete.vue'
 
@@ -17,6 +17,7 @@ const showAddIngredient = ref(false)
 const newIngredientName = ref('')
 const isAddingIngredient = ref(false)
 const addIngredientError = ref<string | null>(null)
+const removingIngredient = ref<string | null>(null)
 
 async function fetchRecipe() {
   const id = route.params.id as string
@@ -89,6 +90,24 @@ async function addIngredient() {
     addIngredientError.value = e instanceof Error ? e.message : 'Failed to add ingredient'
   } finally {
     isAddingIngredient.value = false
+  }
+}
+
+async function removeIngredient(ingredientName: string) {
+  if (!recipe.value) return
+
+  removingIngredient.value = ingredientName
+
+  try {
+    const response = await deleteApiRecipesIdIngredientsIngredientName(recipe.value.id, ingredientName)
+
+    if (response.status === 200) {
+      recipe.value = response.data as Recipe
+    }
+  } catch (e) {
+    // Silent fail - could add error handling if needed
+  } finally {
+    removingIngredient.value = null
   }
 }
 
@@ -175,14 +194,27 @@ onMounted(() => {
           </div>
 
           <div v-if="recipe.ingredients.length > 0" class="flex flex-wrap gap-2 mb-4">
-            <RouterLink
+            <div
               v-for="ingredient in recipe.ingredients"
               :key="ingredient"
-              :to="{ path: '/', query: { ingredient } }"
-              class="badge-ingredient hover:shadow-[2px_2px_0_var(--color-soft-black)] transition-all"
+              class="group relative inline-flex items-center"
             >
-              {{ ingredient }}
-            </RouterLink>
+              <RouterLink
+                :to="{ path: '/', query: { ingredient } }"
+                class="badge-ingredient hover:shadow-[2px_2px_0_var(--color-soft-black)] transition-all pr-7"
+                :class="{ 'opacity-50': removingIngredient === ingredient }"
+              >
+                {{ ingredient }}
+              </RouterLink>
+              <button
+                type="button"
+                class="absolute right-1 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-soft-black/10 hover:bg-primary hover:text-white text-charcoal transition-all"
+                :disabled="removingIngredient === ingredient"
+                @click.prevent="removeIngredient(ingredient)"
+              >
+                <XMarkIcon class="h-3 w-3" />
+              </button>
+            </div>
           </div>
           <p v-else class="text-charcoal text-sm mb-4 italic">No ingredients yet.</p>
 

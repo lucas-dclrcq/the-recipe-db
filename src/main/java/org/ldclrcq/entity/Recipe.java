@@ -61,6 +61,10 @@ public class Recipe extends PanacheEntityBase {
         this.ingredients.add(ingredient);
     }
 
+    public boolean removeIngredient(Ingredient ingredient) {
+        return this.ingredients.remove(ingredient);
+    }
+
     public static Optional<Recipe> findByIdOptional(UUID id) {
         return find("id", id).firstResultOptional();
     }

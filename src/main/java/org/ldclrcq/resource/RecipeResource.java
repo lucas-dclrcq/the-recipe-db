@@ -104,6 +104,45 @@ public class RecipeResource {
         return Response.ok(toRecipeResponse(recipe)).build();
     }
 
+    @DELETE
+    @Path("/{id}/ingredients/{ingredientName}")
+    @Transactional
+    public Response removeIngredient(@PathParam("id") UUID id, @PathParam("ingredientName") String ingredientName) {
+        if (ingredientName == null || ingredientName.isBlank()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Ingredient name is required")
+                    .build();
+        }
+
+        Optional<Recipe> recipeOpt = Recipe.findByIdOptional(id);
+        if (recipeOpt.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Recipe not found")
+                    .build();
+        }
+
+        Recipe recipe = recipeOpt.get();
+        String normalizedName = Ingredient.normalize(ingredientName);
+
+        Optional<Ingredient> ingredientOpt = Ingredient.findByName(normalizedName);
+        if (ingredientOpt.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Ingredient not found")
+                    .build();
+        }
+
+        boolean removed = recipe.removeIngredient(ingredientOpt.get());
+        if (!removed) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Ingredient not associated with this recipe")
+                    .build();
+        }
+
+        recipe.persist();
+
+        return Response.ok(toRecipeResponse(recipe)).build();
+    }
+
     private RecipeResponse toRecipeResponse(Recipe recipe) {
         Optional<Cookbook> cookbook = Cookbook.findByIdOptional(recipe.cookbookId);
 

@@ -31,21 +31,6 @@ const previewUrl = computed(() => {
   return URL.createObjectURL(selectedFile.value)
 })
 
-const ocrStatusClass = computed(() => {
-  switch (cookbook.value?.ocrStatus) {
-    case 'PROCESSING':
-      return 'bg-blue-50 text-blue-800'
-    case 'COMPLETED':
-      return 'bg-green-50 text-green-800'
-    case 'COMPLETED_WITH_ERRORS':
-      return 'bg-yellow-50 text-yellow-800'
-    case 'FAILED':
-      return 'bg-red-50 text-red-800'
-    default:
-      return 'bg-gray-50 text-gray-800'
-  }
-})
-
 const ocrStatusCardClass = computed(() => {
   switch (cookbook.value?.ocrStatus) {
     case 'PROCESSING':

@@ -400,5 +400,93 @@ class RecipeResourceTest {
                 .then()
                 .statusCode(400);
     }
+
+    @Test
+    void removeIngredient_shouldRemoveExistingIngredient() {
+        // Get a recipe ID (Spaghetti Bolognese has ground beef, tomato sauce, pasta)
+        String recipeId = given()
+                .queryParam("q", "Spaghetti")
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("recipes[0].id");
+
+        // Verify the ingredient exists first
+        given()
+                .when()
+                .get("/api/recipes/{id}", recipeId)
+                .then()
+                .statusCode(200)
+                .body("ingredients", hasItem("ground beef"));
+
+        // Remove the ingredient
+        given()
+                .when()
+                .delete("/api/recipes/{id}/ingredients/{ingredientName}", recipeId, "ground beef")
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(recipeId))
+                .body("ingredients", not(hasItem("ground beef")));
+
+        // Verify the ingredient is actually removed
+        given()
+                .when()
+                .get("/api/recipes/{id}", recipeId)
+                .then()
+                .statusCode(200)
+                .body("ingredients", not(hasItem("ground beef")));
+    }
+
+    @Test
+    void removeIngredient_shouldReturn404ForNonExistentRecipe() {
+        UUID randomId = UUID.randomUUID();
+
+        given()
+                .when()
+                .delete("/api/recipes/{id}/ingredients/{ingredientName}", randomId, "ground beef")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void removeIngredient_shouldReturn404ForNonExistentIngredient() {
+        // Get a recipe ID
+        String recipeId = given()
+                .queryParam("q", "Spaghetti")
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("recipes[0].id");
+
+        given()
+                .when()
+                .delete("/api/recipes/{id}/ingredients/{ingredientName}", recipeId, "nonexistent ingredient xyz")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void removeIngredient_shouldReturn404ForIngredientNotInRecipe() {
+        // Get a recipe ID (Spaghetti Bolognese)
+        String recipeId = given()
+                .queryParam("q", "Spaghetti")
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("recipes[0].id");
+
+        // Try to remove romaine lettuce (belongs to Caesar Salad, not Spaghetti)
+        given()
+                .when()
+                .delete("/api/recipes/{id}/ingredients/{ingredientName}", recipeId, "romaine lettuce")
+                .then()
+                .statusCode(404);
+    }
 }
 
