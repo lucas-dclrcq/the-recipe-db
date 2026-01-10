@@ -76,7 +76,7 @@ watch(
     </div>
 
     <!-- Recipe grid -->
-    <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-2 pr-2">
       <RecipeCard v-for="recipe in recipes" :key="recipe.id" :recipe="recipe" />
     </div>
 
@@ -107,7 +107,7 @@ watch(
     </div>
 
     <!-- Initial loading skeleton -->
-    <div v-else-if="isLoading && recipes.length === 0" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-else-if="isLoading && recipes.length === 0" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-2 pr-2">
       <RecipeCardSkeleton v-for="n in 6" :key="n" />
     </div>
 

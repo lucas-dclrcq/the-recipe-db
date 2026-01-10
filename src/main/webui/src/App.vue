@@ -18,14 +18,14 @@ watch(
 </script>
 
 <template>
-  <div class="min-h-screen bg-cream flex pattern-grid">
+  <div class="min-h-screen bg-cream pattern-grid overflow-x-hidden">
     <!-- Decorative floating shapes - visible on larger screens -->
     <div class="hidden lg:block fixed top-20 right-10 w-16 h-16 bg-secondary rounded-full opacity-20 animate-float" aria-hidden="true"></div>
     <div class="hidden lg:block fixed top-40 right-32 w-8 h-8 bg-primary opacity-15 rotate-45" aria-hidden="true"></div>
     <div class="hidden lg:block fixed bottom-20 right-20 w-12 h-12 border-4 border-accent rounded-full opacity-20" aria-hidden="true"></div>
 
     <!-- Desktop/Tablet side nav -->
-    <aside class="hidden md:block w-64 sidebar-artistic fixed inset-y-0 left-0 z-20 overflow-y-auto">
+    <aside class="hidden md:flex md:flex-col w-64 sidebar-artistic fixed inset-y-0 left-0 z-20 h-screen">
       <SideNav />
     </aside>
 
@@ -57,10 +57,10 @@ watch(
 
     <!-- Mobile drawer -->
     <aside
-      class="md:hidden fixed inset-y-0 left-0 w-72 sidebar-artistic z-50 transform transition-transform duration-300 ease-out"
+      class="md:hidden fixed inset-y-0 left-0 w-72 sidebar-artistic z-50 transform transition-transform duration-300 ease-out flex flex-col h-screen"
       :class="isMobileNavOpen ? 'translate-x-0' : '-translate-x-full'"
     >
-      <div class="h-16 flex items-center justify-between px-5 border-b-4 border-soft-black bg-secondary">
+      <div class="h-16 flex-shrink-0 flex items-center justify-between px-5 border-b-4 border-soft-black bg-secondary">
         <span class="font-black text-soft-black text-lg tracking-tight">Menu</span>
         <button
           type="button"
@@ -73,12 +73,14 @@ watch(
           </svg>
         </button>
       </div>
-      <SideNav />
+      <div class="flex-1 flex flex-col min-h-0">
+        <SideNav hide-logo />
+      </div>
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 min-w-0 md:ml-64 w-full">
-      <div class="md:py-8 md:px-10 px-4 pt-20 pb-8">
+    <main class="md:ml-64">
+      <div class="px-4 pt-20 pb-6 md:pt-8 md:pb-8 md:px-10">
         <RouterView />
       </div>
     </main>

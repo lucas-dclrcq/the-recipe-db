@@ -108,17 +108,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <div>
     <div class="max-w-6xl mx-auto">
       <!-- Header with merge button -->
-      <div class="flex items-center justify-between mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div class="page-header !mb-0 relative">
           <h1 class="page-title">Ingredients</h1>
           <!-- Decorative elements -->
-          <div class="absolute -top-2 right-0 w-8 h-8 bg-accent rounded-full opacity-60" aria-hidden="true"></div>
-          <div class="absolute top-4 right-12 w-4 h-4 bg-secondary" style="transform: rotate(45deg);" aria-hidden="true"></div>
+          <div class="absolute -top-2 right-0 w-8 h-8 bg-accent rounded-full opacity-60 hidden sm:block" aria-hidden="true"></div>
+          <div class="absolute top-4 right-12 w-4 h-4 bg-secondary hidden sm:block" style="transform: rotate(45deg);" aria-hidden="true"></div>
         </div>
-        <div class="flex gap-3">
+        <div class="flex gap-3 flex-shrink-0">
           <button
             v-if="canMerge"
             type="button"
@@ -216,9 +216,9 @@ onMounted(() => {
         </div>
 
         <!-- Error with retry -->
-        <div v-if="error" class="card-pop p-5 border-primary flex items-center justify-between bg-primary/5">
+        <div v-if="error" class="card-pop p-5 border-primary flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-primary/5">
           <div class="flex items-center gap-3">
-            <span class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+            <span class="w-10 h-10 flex-shrink-0 rounded-xl bg-primary flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
@@ -227,7 +227,7 @@ onMounted(() => {
           </div>
           <button
             type="button"
-            class="btn-primary !py-2 !px-4 text-sm"
+            class="btn-primary !py-2 !px-4 text-sm flex-shrink-0"
             @click="() => fetchIngredients()"
           >
             Retry
@@ -236,7 +236,7 @@ onMounted(() => {
       </div>
 
       <!-- Loading skeleton -->
-      <div v-if="isLoading" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div v-if="isLoading" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-2 pr-2">
         <div v-for="i in 12" :key="i" class="card-pop p-5">
           <div class="h-6 skeleton-artistic w-3/4"/>
           <div class="h-4 skeleton-artistic w-1/2 mt-3"/>
@@ -256,7 +256,7 @@ onMounted(() => {
           <p class="text-charcoal">Try adjusting your search or filters.</p>
         </div>
         <div v-else>
-          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-2 pr-2">
             <IngredientCard
               v-for="ingredient in ingredients"
               :key="ingredient.id"

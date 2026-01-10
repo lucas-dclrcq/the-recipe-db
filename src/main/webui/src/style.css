@@ -182,8 +182,14 @@ html {
   background: white;
   border: 3px solid var(--color-soft-black);
   border-radius: 16px;
-  box-shadow: 6px 6px 0 var(--color-soft-black);
+  box-shadow: 4px 4px 0 var(--color-soft-black);
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (min-width: 640px) {
+  .card-pop {
+    box-shadow: 6px 6px 0 var(--color-soft-black);
+  }
 }
 
 .card-pop:hover {
@@ -223,13 +229,20 @@ html {
   background: var(--color-primary);
   color: white;
   font-weight: 700;
-  padding: 12px 24px;
+  padding: 10px 18px;
   border-radius: 12px;
   border: 3px solid var(--color-soft-black);
-  box-shadow: 4px 4px 0 var(--color-soft-black);
+  box-shadow: 3px 3px 0 var(--color-soft-black);
   transition: all 0.15s ease;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+@media (min-width: 640px) {
+  .btn-primary {
+    padding: 12px 24px;
+    box-shadow: 4px 4px 0 var(--color-soft-black);
+  }
 }
 
 .btn-primary:hover {
@@ -246,11 +259,18 @@ html {
   background: white;
   color: var(--color-soft-black);
   font-weight: 700;
-  padding: 12px 24px;
+  padding: 10px 18px;
   border-radius: 12px;
   border: 3px solid var(--color-soft-black);
-  box-shadow: 4px 4px 0 var(--color-soft-black);
+  box-shadow: 3px 3px 0 var(--color-soft-black);
   transition: all 0.15s ease;
+}
+
+@media (min-width: 640px) {
+  .btn-secondary {
+    padding: 12px 24px;
+    box-shadow: 4px 4px 0 var(--color-soft-black);
+  }
 }
 
 .btn-secondary:hover {
@@ -263,11 +283,18 @@ html {
   background: var(--color-secondary);
   color: var(--color-soft-black);
   font-weight: 700;
-  padding: 12px 24px;
+  padding: 10px 18px;
   border-radius: 12px;
   border: 3px solid var(--color-soft-black);
-  box-shadow: 4px 4px 0 var(--color-soft-black);
+  box-shadow: 3px 3px 0 var(--color-soft-black);
   transition: all 0.15s ease;
+}
+
+@media (min-width: 640px) {
+  .btn-accent {
+    padding: 12px 24px;
+    box-shadow: 4px 4px 0 var(--color-soft-black);
+  }
 }
 
 .btn-accent:hover {
@@ -372,16 +399,29 @@ html {
 .input-field {
   border: 3px solid var(--color-soft-black);
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   font-size: 1rem;
   transition: all 0.2s ease;
   background: white;
 }
 
+@media (min-width: 640px) {
+  .input-field {
+    padding: 12px 16px;
+  }
+}
+
 .input-field:focus {
   outline: none;
-  box-shadow: 4px 4px 0 var(--color-secondary);
-  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--color-secondary);
+  transform: translate(-1px, -1px);
+}
+
+@media (min-width: 640px) {
+  .input-field:focus {
+    box-shadow: 4px 4px 0 var(--color-secondary);
+    transform: translate(-2px, -2px);
+  }
 }
 
 .input-field::placeholder {
@@ -395,7 +435,6 @@ html {
 .sidebar-artistic {
   background: var(--color-warm-white);
   border-right: 4px solid var(--color-soft-black);
-  position: relative;
 }
 
 .sidebar-artistic::after {
@@ -447,10 +486,16 @@ html {
 }
 
 .page-title {
-  font-size: 2.5rem;
+  font-size: 1.75rem;
   font-weight: 900;
   letter-spacing: -0.03em;
   color: var(--color-soft-black);
+}
+
+@media (min-width: 640px) {
+  .page-title {
+    font-size: 2.5rem;
+  }
 }
 
 /* ========================================

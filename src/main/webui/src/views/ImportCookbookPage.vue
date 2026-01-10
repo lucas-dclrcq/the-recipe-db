@@ -76,7 +76,7 @@ async function handleConfirmImport() {
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <div>
     <div class="max-w-4xl mx-auto">
       <!-- Header with artistic styling -->
       <div class="page-header mb-8 relative">

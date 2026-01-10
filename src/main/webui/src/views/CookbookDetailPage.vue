@@ -207,7 +207,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <div>
     <div class="max-w-6xl mx-auto">
       <!-- Back button -->
       <button
