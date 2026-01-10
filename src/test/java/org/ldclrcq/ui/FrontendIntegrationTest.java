@@ -394,7 +394,7 @@ class FrontendIntegrationTest {
     void navigation_shouldNavigateFromIngredientsToRecipes() {
         page.navigate(rootUrl.toString() + "ingredients");
 
-        page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Recipes")).click();
+        page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Recipes").setExact(true)).click();
 
         page.waitForURL("**/recipes");
 
