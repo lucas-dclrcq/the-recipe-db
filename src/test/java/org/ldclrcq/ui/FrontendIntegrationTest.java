@@ -437,4 +437,75 @@ class FrontendIntegrationTest {
 
         assertThat(page.getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName("Recipes"))).isVisible();
     }
+
+    // =============== Recipe Detail Page Tests ===============
+
+    @Test
+    @DisplayName("Recipe Detail: should add a new ingredient to a recipe")
+    void recipeDetail_shouldAddNewIngredient() {
+        // Get a recipe ID via the API
+        String recipeId = given()
+                .queryParam("q", "Chocolate Cake")
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("recipes[0].id");
+
+        // Navigate directly to the recipe detail page
+        page.navigate(rootUrl.toString() + "recipes/" + recipeId);
+
+        // Wait for recipe detail page to load
+        page.waitForSelector("text=Ingredients");
+
+        // Click "Add ingredient" button
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Add ingredient")).click();
+
+        // Fill in the ingredient name
+        var ingredientInput = page.getByPlaceholder("Search by ingredient...");
+        assertThat(ingredientInput).isVisible();
+        ingredientInput.fill("butter");
+
+        // Click the Add button
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Add")).click();
+
+        // Wait for the ingredient to be added and verify it appears
+        page.waitForSelector("text=butter");
+        assertThat(page.getByText("butter").first()).isVisible();
+    }
+
+    @Test
+    @DisplayName("Recipe Detail: should close add ingredient form when clicking X button")
+    void recipeDetail_shouldCloseAddIngredientForm() {
+        // Get a recipe ID via the API
+        String recipeId = given()
+                .queryParam("q", "Chocolate Cake")
+                .when()
+                .get("/api/recipes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("recipes[0].id");
+
+        // Navigate directly to the recipe detail page
+        page.navigate(rootUrl.toString() + "recipes/" + recipeId);
+
+        // Wait for recipe detail page to load
+        page.waitForSelector("text=Ingredients");
+
+        // Click "Add ingredient" button
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Add ingredient")).click();
+
+        // Verify the input is visible
+        var ingredientInput = page.getByPlaceholder("Search by ingredient...");
+        assertThat(ingredientInput).isVisible();
+
+        // Click the X button to close (it's the last button with the XMarkIcon)
+        page.locator("button").filter(new com.microsoft.playwright.Locator.FilterOptions().setHas(page.locator("svg"))).last().click();
+
+        // Verify the form is closed and Add ingredient button is visible again
+        page.waitForSelector("button:has-text('Add ingredient')");
+        assertThat(page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Add ingredient"))).isVisible();
+    }
 }

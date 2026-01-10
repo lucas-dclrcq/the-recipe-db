@@ -232,17 +232,7 @@ onMounted(() => {
 
           <!-- Add ingredient form -->
           <div v-else class="mt-3 p-4 bg-cream rounded-xl border-2 border-soft-black/10">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-sm font-bold text-soft-black">Add new ingredient</span>
-              <button
-                type="button"
-                class="text-charcoal hover:text-primary transition-colors"
-                @click="closeAddIngredient"
-              >
-                <XMarkIcon class="h-5 w-5" />
-              </button>
-            </div>
-            <div class="flex gap-2">
+            <div class="flex items-center gap-2">
               <div class="flex-1">
                 <IngredientAutocomplete
                   v-model="newIngredientName"
@@ -252,11 +242,18 @@ onMounted(() => {
               <button
                 type="button"
                 :disabled="!newIngredientName.trim() || isAddingIngredient"
-                class="btn-primary !py-2 !px-4 text-sm disabled:opacity-50"
+                class="btn-primary !py-2 !px-4 text-sm disabled:opacity-50 flex-shrink-0"
                 @click="addIngredient"
               >
                 <span v-if="isAddingIngredient">Adding...</span>
                 <span v-else>Add</span>
+              </button>
+              <button
+                type="button"
+                class="p-2 text-charcoal hover:text-primary hover:bg-soft-black/5 rounded-lg flex-shrink-0 transition-colors"
+                @click="closeAddIngredient"
+              >
+                <XMarkIcon class="h-5 w-5" />
               </button>
             </div>
             <p class="mt-2 text-xs text-charcoal">
