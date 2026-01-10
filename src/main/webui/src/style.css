@@ -1,11 +1,5 @@
 @import "tailwindcss";
 
-/* ========================================
-   THE RECIPE DB - Art-Inspired Design System
-   Inspired by: Bauhaus, Memphis Design, Pop Art, De Stijl
-   ======================================== */
-
-/* Custom CSS Variables - Bold Color Palette */
 @theme {
   /* Primary Colors - De Stijl inspired */
   --color-primary: #FF3366;
@@ -52,22 +46,6 @@
 
 html {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-}
-
-/* Bold Display Headings */
-.heading-display {
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-}
-
-.heading-artistic {
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-pop-purple) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 /* ========================================
@@ -204,13 +182,11 @@ html {
 
 /* Memphis style card with colorful border */
 .card-memphis {
-  background: white;
-  border-radius: 20px;
+    border-radius: 20px;
   border: 2px solid transparent;
-  background-image:
-    linear-gradient(white, white),
+    background: white linear-gradient(white, white),
     linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-accent) 100%);
-  background-origin: border-box;
+    background-origin: border-box;
   background-clip: padding-box, border-box;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
@@ -234,7 +210,6 @@ html {
   border: 3px solid var(--color-soft-black);
   box-shadow: 3px 3px 0 var(--color-soft-black);
   transition: all 0.15s ease;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 

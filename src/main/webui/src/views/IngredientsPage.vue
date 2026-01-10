@@ -110,13 +110,9 @@ onMounted(() => {
 <template>
   <div>
     <div class="max-w-6xl mx-auto">
-      <!-- Header with merge button -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div class="page-header !mb-0 relative">
           <h1 class="page-title">Ingredients</h1>
-          <!-- Decorative elements -->
-          <div class="absolute -top-2 right-0 w-8 h-8 bg-accent rounded-full opacity-60 hidden sm:block" aria-hidden="true"></div>
-          <div class="absolute top-4 right-12 w-4 h-4 bg-secondary hidden sm:block" style="transform: rotate(45deg);" aria-hidden="true"></div>
         </div>
         <div class="flex gap-3 flex-shrink-0">
           <button

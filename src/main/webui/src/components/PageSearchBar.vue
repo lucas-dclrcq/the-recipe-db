@@ -64,7 +64,7 @@ function toggleFilters() {
     <div class="flex gap-3">
       <button
         type="button"
-        class="btn-primary text-sm flex-1 sm:flex-none"
+        class="btn-primary text-sm flex-1"
         @click="handleSubmit"
       >
         Search

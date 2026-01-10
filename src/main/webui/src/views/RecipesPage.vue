@@ -81,15 +81,12 @@ onMounted(() => {
 <template>
   <div>
     <div class="max-w-6xl mx-auto">
-      <!-- Header with artistic styling -->
       <div class="page-header mb-8 relative">
         <h1 class="page-title">Recipes</h1>
-        <!-- Decorative elements -->
         <div class="absolute -top-2 right-0 w-8 h-8 bg-secondary rounded-full opacity-60" aria-hidden="true"></div>
         <div class="absolute top-4 right-12 w-4 h-4 bg-accent" style="transform: rotate(45deg);" aria-hidden="true"></div>
       </div>
 
-      <!-- Search and filters -->
       <div class="mb-8 space-y-4">
         <PageSearchBar
           v-model="query"
@@ -100,7 +97,6 @@ onMounted(() => {
           @update:filters-expanded="showFilters = $event"
         />
 
-        <!-- Filter panel -->
         <div v-if="showFilters" class="filter-panel p-6 space-y-5 animate-pop-in">
           <div class="grid gap-5 sm:grid-cols-2">
             <div>
