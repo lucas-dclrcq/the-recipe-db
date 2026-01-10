@@ -192,6 +192,46 @@ public class RecipeResource { ...
 2. Make the changes to the API to make the test pass
 3. Generate the frontend client and modify the frontend as needed
 
+---
+
+## Git Commit Conventions
+
+This project uses **Conventional Commits**. All commit messages must follow this format:
+
+```
+<type>: <description>
+```
+
+### Types
+
+| Type       | Purpose                                      |
+|------------|----------------------------------------------|
+| `feat`     | New feature                                  |
+| `fix`      | Bug fix                                      |
+| `docs`     | Documentation only changes                   |
+| `style`    | Code style (formatting, semicolons, etc.)    |
+| `refactor` | Code change that neither fixes nor adds      |
+| `perf`     | Performance improvement                      |
+| `test`     | Adding or updating tests                     |
+| `chore`    | Build process, tooling, dependencies         |
+| `ci`       | CI/CD configuration                          |
+
+### Examples
+
+```
+feat: add ingredient search functionality
+fix: ensure bottom accent line stays at bottom of card
+docs: update API documentation
+refactor: extract validation logic to separate service
+```
+
+### Rules
+
+- Use lowercase for the type and description
+- Keep the description concise (50 chars or less ideal)
+- Use imperative mood ("add" not "added" or "adds")
+- Do not end with a period
+
 ## Testing
 
 ### Backend Tests

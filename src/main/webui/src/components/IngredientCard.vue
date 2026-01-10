@@ -26,7 +26,7 @@ function handleCheckboxKeydown(e: KeyboardEvent) {
 
 <template>
   <div
-    class="card-pop relative overflow-hidden group"
+    class="card-pop relative overflow-hidden group flex flex-col"
     :class="selected ? 'ring-4 ring-primary ring-offset-2' : ''"
   >
     <div class="absolute top-4 left-4 z-10">
@@ -60,7 +60,7 @@ function handleCheckboxKeydown(e: KeyboardEvent) {
 
     <RouterLink
       :to="`/ingredients/${ingredient.id}`"
-      class="block p-5 pl-14"
+      class="block p-5 pl-14 flex-1"
     >
       <h3 class="text-lg font-black text-soft-black line-clamp-1 capitalize tracking-tight group-hover:text-primary transition-colors">
         {{ ingredient.name }}
