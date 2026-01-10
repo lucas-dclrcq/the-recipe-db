@@ -75,6 +75,8 @@ export function useImportWizard() {
     }
   }
 
+  const uploadProgress = ref({ current: 0, total: 0 })
+
   async function uploadIndexPages(): Promise<boolean> {
     if (!cookbookId.value) {
       error.value = 'No cookbook ID'
@@ -84,18 +86,32 @@ export function useImportWizard() {
     isLoading.value = true
     error.value = null
 
-    try {
-      const response = await postApiCookbooksIdIndexPages(cookbookId.value, {
-        files: uploadedFiles.value,
-      })
+    const BATCH_SIZE = 3
+    const files = uploadedFiles.value
+    const batches: File[][] = []
 
-      if (response.status === 200) {
-        currentStep.value = 'processing'
-        return true
-      } else {
-        error.value = 'Failed to upload index pages'
-        return false
+    for (let i = 0; i < files.length; i += BATCH_SIZE) {
+      batches.push(files.slice(i, i + BATCH_SIZE))
+    }
+
+    uploadProgress.value = { current: 0, total: files.length }
+
+    try {
+      for (const batch of batches) {
+        const response = await postApiCookbooksIdIndexPages(cookbookId.value, {
+          files: batch,
+        })
+
+        if (response.status !== 200) {
+          error.value = 'Failed to upload index pages'
+          return false
+        }
+
+        uploadProgress.value.current += batch.length
       }
+
+      currentStep.value = 'processing'
+      return true
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Unknown error occurred'
       return false
@@ -179,6 +195,7 @@ export function useImportWizard() {
     formData.author = ''
     uploadedFiles.value = []
     ocrResults.value = []
+    uploadProgress.value = { current: 0, total: 0 }
   }
 
   function goToStep(step: WizardStep) {
@@ -194,6 +211,7 @@ export function useImportWizard() {
     formData,
     uploadedFiles,
     ocrResults,
+    uploadProgress,
 
     // Computed
     canProceed,
