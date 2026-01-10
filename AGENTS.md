@@ -191,6 +191,8 @@ public class RecipeResource { ...
 1. Write a failing integration test for the API
 2. Make the changes to the API to make the test pass
 3. Generate the frontend client and modify the frontend as needed
+4. **Add frontend integration tests in `src/test/ui/` for any UI changes**
+5. **Run frontend integration tests and ensure they pass**
 
 ---
 
@@ -254,6 +256,33 @@ class RecipeResourceTest {
     }
 }
 ```
+
+### Frontend Integration Tests (MANDATORY)
+
+> **⚠️ IMPORTANT: Frontend integration tests are REQUIRED for all frontend changes.**
+
+- Located in `src/test/ui/`
+- **You MUST add integration tests** for any frontend feature or modification
+- **You MUST run integration tests** before considering any frontend work complete
+
+#### Running Frontend Integration Tests
+
+```bash
+./mvnw test -Dtest=*UI*
+```
+
+Or run from the test directory:
+
+```bash
+cd src/test/ui
+npm test
+```
+
+#### Requirements
+
+1. **Adding Tests**: When modifying or adding frontend functionality, create corresponding integration tests in `src/test/ui/`
+2. **Running Tests**: Always run the full frontend integration test suite after making frontend changes
+3. **Tests Must Pass**: Do not consider frontend work complete until all integration tests pass
 
 ---
 
