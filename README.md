@@ -3,6 +3,8 @@
 A recipe database application that allows users to import cookbook index pages via OCR, extract and store recipes with
 their ingredients, and search recipes by name, ingredient, or cookbook.
 
+![Screenshot](./docs/assets/screenshot.png)
+
 ## Tech Stack
 
 - **Backend**: Java 21, Quarkus 3.30.5
