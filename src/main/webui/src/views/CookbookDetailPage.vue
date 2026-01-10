@@ -95,7 +95,7 @@ async function confirmDelete() {
   if (!cookbook.value) return
   const result = await deleteCookbook(cookbook.value.id)
   if (result.success) {
-    router.push('/cookbooks')
+    await router.push('/cookbooks')
   }
 }
 

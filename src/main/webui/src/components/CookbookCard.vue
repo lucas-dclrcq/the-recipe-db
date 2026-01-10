@@ -26,7 +26,7 @@ const ocrBadge = computed(() => {
 <template>
   <RouterLink
     :to="`/cookbooks/${cookbook.id}`"
-    class="card-pop block overflow-hidden group"
+    class="card-pop jiggling block overflow-hidden group"
   >
     <!-- Image section with artistic overlay -->
     <div class="aspect-[3/4] bg-cream relative overflow-hidden">

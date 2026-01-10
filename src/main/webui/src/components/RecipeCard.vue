@@ -10,7 +10,7 @@ defineProps<{
 <template>
   <RouterLink
     :to="`/recipes/${recipe.id}`"
-    class="card-pop block p-5 relative overflow-hidden group"
+    class="card-pop jiggling block p-5 relative overflow-hidden group"
   >
     <!-- Decorative corner -->
     <div class="absolute top-0 right-0 w-10 h-10 bg-secondary" style="clip-path: polygon(100% 0, 0 0, 100% 100%);" aria-hidden="true"></div>

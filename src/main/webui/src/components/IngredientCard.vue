@@ -26,7 +26,7 @@ function handleCheckboxKeydown(e: KeyboardEvent) {
 
 <template>
   <div
-    class="card-pop relative overflow-hidden group flex flex-col"
+    class="card-pop jiggling relative overflow-hidden group flex flex-col"
     :class="selected ? 'ring-4 ring-primary ring-offset-2' : ''"
   >
     <div class="absolute top-4 left-4 z-10">
