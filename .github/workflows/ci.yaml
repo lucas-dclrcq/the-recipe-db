@@ -16,16 +16,16 @@ permissions:
   pull-requests: write
 
 jobs:
-  release-please:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
-    steps:
-      - uses: googleapis/release-please-action@v4
-        with:
-          target-branch: 'main'
-          token: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
-          config-file: .release/release-please-config.json
-          manifest-file: .release/release-please-manifest.json
+#  release-please:
+#    runs-on: ubuntu-latest
+#    if: github.event_name != 'pull_request'
+#    steps:
+#      - uses: googleapis/release-please-action@v4
+#        with:
+#          target-branch: 'main'
+#          token: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
+#          config-file: .release/release-please-config.json
+#          manifest-file: .release/release-please-manifest.json
 
   build:
     name: Build & Push Docker Image
