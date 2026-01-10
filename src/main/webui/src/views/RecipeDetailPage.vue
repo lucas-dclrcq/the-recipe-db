@@ -197,20 +197,20 @@ onMounted(() => {
             <div
               v-for="ingredient in recipe.ingredients"
               :key="ingredient"
-              class="group relative inline-flex items-center"
+              class="group inline-flex items-center badge-ingredient pr-1.5 hover:shadow-[2px_2px_0_var(--color-soft-black)] transition-all"
+              :class="{ 'opacity-50': removingIngredient === ingredient }"
             >
               <RouterLink
                 :to="{ path: '/', query: { ingredient } }"
-                class="badge-ingredient hover:shadow-[2px_2px_0_var(--color-soft-black)] transition-all pr-7"
-                :class="{ 'opacity-50': removingIngredient === ingredient }"
+                class="text-soft-black"
               >
                 {{ ingredient }}
               </RouterLink>
               <button
                 type="button"
-                class="absolute right-1 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-soft-black/10 hover:bg-primary hover:text-white text-charcoal transition-all"
+                class="ml-1.5 w-5 h-5 flex items-center justify-center rounded-full bg-soft-black/10 hover:bg-primary hover:text-white text-charcoal transition-all"
                 :disabled="removingIngredient === ingredient"
-                @click.prevent="removeIngredient(ingredient)"
+                @click.stop="removeIngredient(ingredient)"
               >
                 <XMarkIcon class="h-3 w-3" />
               </button>
